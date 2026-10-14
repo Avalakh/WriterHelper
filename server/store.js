@@ -50,7 +50,7 @@ export function createProject(store, title) {
 }
 export function createBook(store, parent, title, number) {
   const b = store.save({ type: 'book', parent, title, number, order: number + 1, content: '' });
-  ['style', 'world', 'plot', 'plan', 'preview'].forEach((type, order) => store.save({ type, parent: b.id, title: { style: 'Стиль', world: 'Описание мира', plot: 'Сюжет', plan: 'Поглавный план', preview: 'Предпросмотр' }[type], order, content: '', fields: type === 'preview' ? { font: 'Georgia', size: 17, width: 700, height: 990, margin: 60, heading: 26 } : {} })); return b;
+  ['style', 'world', 'plot', 'plan', 'preview'].forEach((type, order) => store.save({ type, parent: b.id, title: { style: 'Стиль', world: 'Описание мира', plot: 'Сюжет', plan: 'Поглавный план', preview: 'Предпросмотр' }[type], order, content: '', fields: type === 'preview' ? { font: 'Georgia', size: 17, width: 794, height: 1123, fitWidth: false, margin: 60, heading: 26 } : {} })); return b;
 }
 export function createChapter(store, plan, number, title) {
   const c = store.save({ type: 'chapter', parent: plan, title, number, order: number, content: '' });

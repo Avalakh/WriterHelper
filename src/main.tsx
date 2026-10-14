@@ -115,12 +115,12 @@ function App() {
   const [reviewOriginal,setReviewOriginal]=useState('');const reviewSnapshot=(e:Entity|undefined)=>!e?'':['scene','preview'].includes(e.type)?JSON.stringify(e.fields||{},null,2):e.type==='chapter'?JSON.stringify({title:e.title,content:e.content,fields:e.fields},null,2):e.content;
   useEffect(()=>{if(!candidate)return;const target=entities.find(e=>e.id===candidate.packet.target.id);if(target&&target.rev===candidate.packet.target.rev)setReviewOriginal(candidate.packet.range?target.content.slice(candidate.packet.range.start,candidate.packet.range.end):reviewSnapshot(target));else api('versions?id='+candidate.packet.target.id).then(v=>setReviewOriginal(candidate.packet.range?(v.find((e:Entity)=>e.rev===candidate.packet.target.rev)?.content||'').slice(candidate.packet.range.start,candidate.packet.range.end):reviewSnapshot(v.find((e:Entity)=>e.rev===candidate.packet.target.rev)))).catch(e=>setError(e.message));},[candidate?.id]);
   const previewActive=view==='workspace'&&node?.type==='preview';
-  const previewWidth=draft?.fields?.fitWidth===false?Number(draft?.fields?.width||700):Math.max(300,previewArea);
+  const previewWidth=draft?.fields?.fitWidth===true?Math.max(300,previewArea):Number(draft?.fields?.width||794);
   const previewZoom=prefs.previewZooms[node?.id||'']||100;
   const setPreviewZoom=(zoom:number)=>{if(node)updatePrefs({previewZooms:{...prefsRef.current.previewZooms,[node.id]:Math.max(25,Math.min(250,Math.round(zoom)))}});};
   useLayoutEffect(()=>{const el=mainRef.current;if(!el||!previewActive)return;const update=()=>setPreviewArea(Math.max(300,el.clientWidth-24));update();const observer=new ResizeObserver(update);observer.observe(el);return()=>observer.disconnect();},[previewActive,selected]);
   const previewWheelRef=useRef({draft,previewWidth,previewZoom});previewWheelRef.current={draft,previewWidth,previewZoom};
-  useEffect(()=>{const el=mainRef.current;if(!el||!previewActive)return;const wheel=(e:WheelEvent)=>{if((e.target as HTMLElement).closest('input,select,textarea,button,summary')||!e.deltaY||(!e.ctrlKey&&!e.altKey))return;e.preventDefault();const current=previewWheelRef.current,sign=e.deltaY<0?1:-1;if(e.ctrlKey){setPreviewZoom(current.previewZoom+sign*10);}else if(e.altKey&&current.draft){const f=current.draft.fields||{},ratio=sign>0?1.1:1/1.1;setDraft({...current.draft,fields:{...f,fitWidth:false,width:Math.max(300,Math.min(4000,Math.round(current.previewWidth*ratio))),height:Math.max(400,Math.min(6000,Math.round(Number(f.height||990)*ratio)))}});}};el.addEventListener('wheel',wheel,{passive:false});return()=>el.removeEventListener('wheel',wheel);},[previewActive,selected]);
+  useEffect(()=>{const el=mainRef.current;if(!el||!previewActive)return;const wheel=(e:WheelEvent)=>{if((e.target as HTMLElement).closest('input,select,textarea,button,summary')||!e.deltaY||(!e.ctrlKey&&!e.altKey))return;e.preventDefault();const current=previewWheelRef.current,sign=e.deltaY<0?1:-1;if(e.ctrlKey){setPreviewZoom(current.previewZoom+sign*10);}else if(e.altKey&&current.draft){const f=current.draft.fields||{},ratio=sign>0?1.1:1/1.1;setDraft({...current.draft,fields:{...f,fitWidth:false,width:Math.max(300,Math.min(4000,Math.round(current.previewWidth*ratio))),height:Math.max(400,Math.min(6000,Math.round(Number(f.height||1123)*ratio)))}});}};el.addEventListener('wheel',wheel,{passive:false});return()=>el.removeEventListener('wheel',wheel);},[previewActive,selected]);
   const chapter=ancestor(node,'chapter');
   const canEdit=!!node&&!['project','book','canon','characters','plan','scenes'].includes(node.type);
   const searchResults=query.trim()?entities.filter(e=>!['connection','prompt','packet','candidate','scheme'].includes(e.type)&&ancestor(e,'project')?.id===project?.id&&(e.title+' '+e.content+' '+JSON.stringify(e.fields||{})).toLocaleLowerCase('ru').includes(query.toLocaleLowerCase('ru'))):[];
@@ -173,7 +173,7 @@ function Constructor({ target, entities, run, reload }: { target: Entity; entiti
 }
 
 function Preview({ node, chapters, manuscript, onChange, save, select, width, zoom }: { node: Entity; chapters: Entity[]; manuscript: (c: Entity) => Entity | undefined; onChange: (f: any) => void; save: () => void; select: (id: string) => void; width:number; zoom:number }) {
-  const f = node.fields || {}; const effectiveMargin=Math.min(Number(f.margin||60),(width-100)/2,(Number(f.height||990)-160)/2); const measure = useRef<HTMLDivElement>(null); const [pages, setPages] = useState<{ chapter: string; blocks: { heading?: boolean; text: string }[] }[]>([]);
+  const f = node.fields || {}; const effectiveMargin=Math.min(Number(f.margin||60),(width-100)/2,(Number(f.height||1123)-160)/2); const measure = useRef<HTMLDivElement>(null); const [pages, setPages] = useState<{ chapter: string; blocks: { heading?: boolean; text: string }[] }[]>([]);
   useLayoutEffect(() => {
     let alive = true;
     document.fonts.ready.then(() => {
@@ -184,7 +184,7 @@ function Preview({ node, chapters, manuscript, onChange, save, select, width, zo
         const m = manuscript(c); if (!m?.content.trim()) continue;
         let page = { chapter: m.id, blocks: [] as { heading?: boolean; text: string }[] }, height = 0;
         function flush() { if (page.blocks.length) result.push(page); page = { chapter: m!.id, blocks: [] }; height = 0; }
-        const capacity = Number(f.height || 990) - 2 * effectiveMargin - 80;
+        const capacity = Number(f.height || 1123) - 2 * effectiveMargin - 80;
         const raw = m.content.replace(/^#\s+[^\n]+\n/, ''); const blocks = [{ text: `${c.number}. ${c.title}`, heading: true }, ...raw.split(/\n\s*\n/).filter(Boolean).map(text => ({ text, heading: false }))];
         for (const block of blocks) {
           let text = block.text; let h = size(text, block.heading);
@@ -198,7 +198,7 @@ function Preview({ node, chapters, manuscript, onChange, save, select, width, zo
     }); return () => { alive = false; };
   }, [node.rev, node.fields, width, chapters.map(c => `${c.id}:${manuscript(c)?.rev}`).join(',')]);
   const style = { fontFamily: f.font || 'Georgia', fontSize: f.size || 17, lineHeight: 1.65, width: width - 2 * effectiveMargin };
-  const height=Number(f.height||990),margin=Math.min(Number(f.margin||60),(width-100)/2,(height-160)/2),scale=zoom/100;
+  const height=Number(f.height||1123),margin=Math.min(Number(f.margin||60),(width-100)/2,(height-160)/2),scale=zoom/100;
   return <div className="preview-workspace"><h1 className="sr-only">Предпросмотр</h1><details className="preview-details"><summary>Оформление и сведения · страниц: {pages.length} · колесо: прокрутка · Ctrl + колесо: масштаб · Alt + колесо: размер полотна</summary><div className="fields-grid">{[['font','Шрифт'],['margin','Поля (px)']].map(([key,label])=><Field key={key} label={label} type={key==='font'?'text':'number'} value={f[key]} onChange={value=>onChange({...f,[key]:value})}/>)}</div><button onClick={save}>Сохранить оформление</button><p>Без рукописи: {chapters.filter(c=>!manuscript(c)?.content.trim()).map(c=>c.number).join(', ')||'нет'}</p><div className="toolbar">{chapters.filter(c=>!manuscript(c)?.content.trim()).map(c=><button key={c.id} onClick={()=>select(manuscript(c)?.id||c.id)}>Открыть ненаписанную главу {c.number}</button>)}</div></details><div ref={measure} className="measure" style={style} aria-hidden="true"/><div className="pages preview-pages">{pages.map((p,i)=><div className="preview-page-slot" key={i} style={{width:width*scale,height:height*scale}}><article className="page" style={{...style,width,height,minHeight:height,padding:margin,transform:`scale(${scale})`,transformOrigin:'top left'}}><div>{p.blocks.map((b,j)=>b.heading?<h2 key={j} style={{fontSize:f.heading||26}}>{b.text}</h2>:<p key={j}>{b.text}</p>)}</div><button onClick={()=>select(p.chapter)}>Страница {i+1} · открыть главу</button></article></div>)}{!pages.length&&<div className="preview-empty">Здесь появится предпросмотр написанных глав.</div>}</div></div>;
 
 }

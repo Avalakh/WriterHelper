@@ -31,14 +31,27 @@ try {
     Require-Success
     npm test
     Require-Success
+    node tests/save-shortcut-ui.js
+    Require-Success
+    node tests/manuscript-position-ui.js
+    Require-Success
+    node tests/generation-target-ui.js
+    Require-Success
     if ((Test-Path -LiteralPath (Join-Path $writerApp 'data/writer.sqlite'))) { throw 'Каталог сборки содержит пользовательскую базу; повторная сборка запрещена' }
     New-Item -ItemType Directory -Path $writerApp -Force | Out-Null
-    foreach ($writerPart in @('server','dist','docs','desktop','package.json','README.md','WriterHelper.exe','WriterHelper.exe.config','Microsoft.Web.WebView2.Core.dll','Microsoft.Web.WebView2.WinForms.dll','WebView2Loader.dll')) {
+    foreach ($writerPart in @('server','dist','docs','desktop','package.json','package-lock.json','README.md','WriterHelper.exe','WriterHelper.exe.config','Microsoft.Web.WebView2.Core.dll','Microsoft.Web.WebView2.WinForms.dll','WebView2Loader.dll')) {
         Copy-Item -LiteralPath (Join-Path $writerRoot $writerPart) -Destination $writerApp -Recurse -Force
     }
     New-Item -ItemType Directory -Path (Join-Path $writerApp '.desktop'),(Join-Path $writerApp 'books') -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $writerRoot '.desktop/node.exe') -Destination (Join-Path $writerApp '.desktop/node.exe') -Force
     Copy-Item -LiteralPath $writerBook -Destination (Join-Path $writerApp 'books') -Recurse -Force
+    Push-Location $writerApp
+    try {
+        npm ci --omit=dev --ignore-scripts --no-audit --no-fund
+        Require-Success
+    } finally { Pop-Location }
+    node --input-type=module -e "import path from 'node:path';import {createRequire} from 'node:module';const root=path.resolve(process.argv[1]),require=createRequire(path.join(root,'package.json'));for(const name of ['docx','jszip','marked','pdfkit']){const resolved=require.resolve(name);if(!resolved.startsWith(path.join(root,'node_modules')+path.sep))throw Error('Dependency missing from archive: '+name);}console.log('PASS production dependencies included in archive');" $writerApp
+    Require-Success
     node --input-type=module -e "import fs from 'node:fs';import {createHash} from 'node:crypto';const hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');if(hash(process.argv[1])!==hash(process.argv[2]))throw Error('Packaged book differs from current author publication');console.log('PASS packaged book exactly matches author publication');" (Join-Path $writerBook 'data/writer.sqlite') (Join-Path $writerApp 'books/iron-mind/data/writer.sqlite')
     Require-Success
     node tests/starter-book-ui.js $writerApp
@@ -53,6 +66,10 @@ try {
     $writerNotes = Join-Path $writerOutput 'release-notes.md'
     @"
 WriterHelper $writerVersion поставляется вместе с актуальными рабочими материалами «Железного разума». Программа и книга подготовлены одним выпуском из последнего сохранённого авторского проекта.
+
+Ctrl+S сохраняет активный материал, оформление, правку кандидата, подключение ИИ, промпт или схему тем же действием, что кнопка сохранения. Поддерживается русская раскладка. Открытый диалог не сохраняет скрытый за ним редактор.
+
+Рукописи запоминают место чтения и курсор. Цель генерации всегда совпадает с выбранным пунктом структуры; результаты показываются только для этого материала, с указанием книги и главы. Архив включает библиотеки экспорта книги в TXT, FB2, EPUB, Markdown, HTML, DOCX и PDF.
 
 Скачайте WriterHelper-Windows-x64.zip, распакуйте весь архив и запустите WriterHelper.exe. При первом запуске книга уже загружена и открывается первая написанная глава. Импорт и отдельный архив книги не нужны.
 

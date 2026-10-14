@@ -1,6 +1,6 @@
 {
   "name": "writer-helper",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "type": "module",
   "engines": {
@@ -20,7 +20,8 @@
     "test:drafts-audit": "node tests/all-section-drafts-ui.js",
     "release:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1",
     "test:manuscript-position": "node tests/manuscript-position-ui.js",
-    "test:generation-target": "node tests/generation-target-ui.js"
+    "test:generation-target": "node tests/generation-target-ui.js",
+    "test:save-shortcut": "node tests/save-shortcut-ui.js"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.14.1",

@@ -6,6 +6,7 @@ import { CandidateReview as Candidate, statusLabel } from './components/Candidat
 import type { Entity, Edge } from './types';
 import { api } from './api';
 import { usePreferences } from './state/workspace';
+import { useSaveShortcut } from './state/useSaveShortcut';
 import { useEditor } from './state/useEditor';
 import { useFormEditor } from './state/useFormEditor';
 import { hasDrafts } from './state/drafts';
@@ -33,6 +34,7 @@ const roles: Record<string, string> = { constraint: 'Ограничение', ev
 const sorted = (entities: Entity[]) => entities.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
 function Field({ label, value, onChange, multiline = false, type = 'text', disabled = false }: { label: string; value: any; onChange: (v: any) => void; multiline?: boolean; type?: string; disabled?: boolean }) { return <label className="field"><span>{label}</span>{multiline ? <textarea aria-label={label} disabled={disabled} value={value ?? ''} onChange={e => onChange(e.target.value)} /> : <input aria-label={label} disabled={disabled} type={type} value={value ?? ''} onChange={e => onChange(type === 'number' ? (e.target.value===''?undefined:Number(e.target.value)) : e.target.value)} />}</label>; }
 function App() {
+  useSaveShortcut();
   const [bookPicker,setBookPicker]=useState(false);
   const [exportOpen,setExportOpen]=useState(false);
   const [textQuery,setTextQuery]=useState<{text:string;title:string;target?:string;field?:string;before?:string;after?:string}|null>(null);

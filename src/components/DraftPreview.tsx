@@ -1,0 +1,5 @@
+import type { Entity } from '../types';
+const names:Record<string,string>={pov:'Точка зрения',time:'Время события',location:'Локация',атмосфера:'Атмосфера',сюжет:'Сюжет',персонажи:'Персонажи',дополнительные_детали:'Дополнительные детали'};
+export function DraftPreview({value}:{value:Entity}){
+ return <div className="draft-preview"><p><strong>Название:</strong> {value.title}</p>{value.content&&<section><h4>{value.type==='manuscript'?'Текст рукописи':'Содержание'}</h4><div className="draft-text">{value.content}</div></section>}{value.task&&<section><h4>Задача</h4><div className="draft-text">{value.task}</div></section>}{Object.keys(value.fields||{}).length>0&&<details><summary>Свойства материала</summary>{Object.entries(value.fields||{}).map(([key,v])=><section key={key}><h4>{names[key]||key}</h4><div className="draft-text">{Array.isArray(v)?v.map(x=>typeof x==='string'?x:JSON.stringify(x,null,2)).join('\n'):typeof v==='object'?JSON.stringify(v,null,2):String(v??'')}</div></section>)}</details>}</div>;
+}

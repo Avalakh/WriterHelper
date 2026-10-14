@@ -1,0 +1,2 @@
+export type Entity = { id: string; type: string; title: string; content: string; parent?: string; project?: string; book?: string; number?: number; order?: number; rev: number; fields?: Record<string, any>; task?: string; provenance?: Record<string, any>; [key: string]: any };
+export type Edge = { id: string; source: string; to: string; role: string; enabled?: boolean; required?: boolean; order?: number; fragment?: string; inherited?: string; [key: string]: any };

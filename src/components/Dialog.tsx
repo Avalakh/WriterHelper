@@ -1,0 +1,3 @@
+import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+export function Dialog({title,children,close}:{title:string;children:ReactNode;close:()=>void}) {const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{const previous=document.activeElement as HTMLElement;ref.current?.showModal();return()=>{ref.current?.close();previous?.focus();};},[]);return createPortal(<dialog ref={ref} aria-label={title} onCancel={e=>{e.preventDefault();close();}}><div className="dialog-head"><h2>{title}</h2><button aria-label="Закрыть диалог" onClick={close}>×</button></div>{children}</dialog>,document.body);}

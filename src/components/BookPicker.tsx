@@ -1,0 +1,5 @@
+import type { Entity } from '../types';
+import { Dialog } from './Dialog';
+export function BookPicker({entities,current,choose,close,library}:{entities:Entity[];current?:string;choose:(id:string)=>void;close:()=>void;library:()=>void}){
+ return <Dialog title="Выбор книги" close={close}><p>Выберите книгу в одном из ваших проектов.</p><div className="book-picker">{entities.filter(e=>e.type==='project').map(project=><section key={project.id}><h2>{project.title}</h2>{entities.filter(e=>e.type==='book'&&e.parent===project.id).sort((a,b)=>(a.number||0)-(b.number||0)).map(book=><button key={book.id} aria-current={book.id===current?'true':undefined} onClick={()=>choose(book.id)}><strong>Книга {book.number}: {book.title}</strong>{book.id===current&&<span>Открыта сейчас</span>}</button>)}{!entities.some(e=>e.type==='book'&&e.parent===project.id)&&<button onClick={()=>choose(project.id)}>Открыть проект и добавить книгу</button>}</section>)}</div><button onClick={library}>Открыть библиотеку проектов</button></Dialog>;
+}

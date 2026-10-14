@@ -1,0 +1,3 @@
+import type { ReactNode } from 'react';
+export function DocumentHeader({title,status,save,menu,editable,busy,children}:{title:string;status:string;save:()=>void;menu:()=>void;editable:boolean;busy:boolean;children?:ReactNode}){return <div className="document-header"><div><span className="eyebrow">РАБОЧИЙ МАТЕРИАЛ</span><strong>{title}</strong><span role="status" className="save-status">{status}</span></div>{children}<div className="toolbar">{editable&&<button className="primary" disabled={busy} onClick={save}>Сохранить</button>}<button aria-label="Меню материала" onClick={menu}>•••</button></div></div>;}
+export function AssistantPanel({children}:{children:ReactNode}){return <div className="assistant-panel">{children}</div>;}

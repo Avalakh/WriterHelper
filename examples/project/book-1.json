@@ -1,0 +1,80 @@
+{
+  "format": "writerhelper-book",
+  "version": 1,
+  "projectId": "my-novel",
+  "book": {
+    "id": "my-novel-book-1",
+    "number": 1,
+    "title": "Книга 1",
+    "style": {
+      "id": "style-1",
+      "title": "Стиль",
+      "content": "Правила повествования.",
+      "fields": {}
+    },
+    "world": {
+      "id": "world-1",
+      "title": "Описание мира",
+      "content": "Правила места.",
+      "fields": {}
+    },
+    "plot": {
+      "id": "plot-1",
+      "title": "Сюжет",
+      "content": "## Глава 1. Начало\n...",
+      "fields": {}
+    },
+    "plan": {
+      "id": "plan-1",
+      "title": "Поглавный план",
+      "content": "Полный исходный план",
+      "fields": {}
+    },
+    "preview": {
+      "id": "preview-1",
+      "title": "Предпросмотр",
+      "content": "",
+      "fields": {
+        "font": "Georgia",
+        "size": 17,
+        "width": 700,
+        "height": 990,
+        "margin": 60,
+        "heading": 26
+      }
+    },
+    "sources": [],
+    "chapters": [
+      {
+        "id": "chapter-1",
+        "number": 1,
+        "title": "Начало",
+        "content": "Подробный план главы",
+        "fields": {},
+        "scenes": [
+          {
+            "id": "scene-1",
+            "number": 1,
+            "title": "Сцена 1",
+            "content": "Событие",
+            "fields": {
+              "номер": 1,
+              "атмосфера": "Тихо",
+              "сюжет": "Событие",
+              "персонажи": [
+                "Герой"
+              ],
+              "дополнительные_детали": []
+            }
+          }
+        ],
+        "manuscript": {
+          "id": "manuscript-1",
+          "title": "Рукопись",
+          "content": "Готовая проза главы",
+          "fields": {}
+        }
+      }
+    ]
+  }
+}

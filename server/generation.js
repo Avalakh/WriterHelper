@@ -1,4 +1,5 @@
 import { ancestry, children, fail, hash, id } from './store.js';
+import { buildFragmentContext } from './fragment-context.js';
 import { applicablePrompts } from './prompts.js';
 
 export const roles = ['constraint', 'events', 'style', 'participants', 'boundary', 'editing'];
@@ -141,9 +142,9 @@ export function makePacket(store, targetId, request) {
   prompts.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
   if (request.selection && (!target.content.includes(request.selection) || request.operation !== 'revise')) errors.push('Выделенный диапазон изменился или операция не является переработкой');
   const packet = { id: id(), target: { id: target.id, rev: target.rev, type: target.type, title: target.title, number: target.number }, operation: request.operation || 'create', selection: request.selection || '', task: request.task || target.task || '', variables, model: connection.model, connection: connection.id, sources, prompts, contract: target.type === 'chapter' ? 'json-chapter' : target.type === 'scene' ? 'json-scene' : target.type === 'preview' ? 'json-preview' : 'text', created: new Date().toISOString() };
-  if(range)packet.range=range;
+  if(range){packet.range=range;packet.fragmentOperation=packet.operation;packet.context=buildFragmentContext(store,{target:target.id,field:'Текст главы',text:range.text,task:packet.task,before:target.content.slice(0,range.start),after:target.content.slice(range.end),contextMode:request.contextMode||'full'},connection,sources);}
   if (!packet.task.trim()) errors.push('Задайте задачу для ИИ');
-  const serialized = JSON.stringify(packet); const estimated = Math.ceil(Buffer.byteLength(serialized, 'utf8') / 2);
+  const serialized = JSON.stringify(packet.context?{...packet,sources:undefined}:packet); const estimated = Math.ceil(Buffer.byteLength(serialized, 'utf8') / 2);
   packet.budget = { estimatedTokens: estimated, mode: 'Консервативная оценка UTF-8, не токенизатор модели', limit: connection.context || 128000, response: connection.maxOutput || 8000 };
   if (estimated + packet.budget.response > packet.budget.limit) errors.push(`Контекст ${estimated} + ответ ${packet.budget.response} превышают ${packet.budget.limit}. Выберите модель или явно измените фрагменты.`);
   if (errors.length) fail(errors.join('\n'));

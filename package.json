@@ -18,7 +18,9 @@
     "book:publish": "node scripts/publish-book.js",
     "test:preview-dirty": "node tests/preview-dirty-ui.js",
     "test:drafts-audit": "node tests/all-section-drafts-ui.js",
-    "release:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1"
+    "release:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1",
+    "test:manuscript-position": "node tests/manuscript-position-ui.js",
+    "test:generation-target": "node tests/generation-target-ui.js"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.14.1",
@@ -29,6 +31,10 @@
     "vite": "8.3.4"
   },
   "dependencies": {
+    "docx": "9.11.0",
+    "jszip": "3.10.2",
+    "marked": "18.1.1",
+    "pdfkit": "0.20.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -40,13 +40,14 @@ internal static class Program {
 internal sealed class StudioWindow:Form {
     [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr window,int command);
     [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr window);
-    readonly string root,data,profile,url,report; readonly bool selfTest; readonly string[] arguments;
+    readonly string root,data,profile,url,report; readonly bool selfTest,taskbarEnabled; readonly string[] arguments;
     readonly WebView2 browser=new WebView2(); readonly NotifyIcon tray=new NotifyIcon();
     readonly Label loading=new Label(); readonly HttpClient http=new HttpClient(new HttpClientHandler{UseProxy=false});
-    Process server; bool exiting,exitRequested,ready; int activations;
+    Process server; bool exiting,exitRequested,ready; int activations; bool started;
+    readonly TaskCompletionSource<bool> downloadTest=new TaskCompletionSource<bool>();
     internal int Result=0;
     public StudioWindow(string root,string data,string profile,int port,bool selfTest,string report,string[] arguments){
-        this.root=root;this.data=data;this.profile=profile;this.selfTest=selfTest;this.report=report;this.arguments=arguments;url="http://localhost:"+port;
+        this.root=root;this.data=data;this.profile=profile;this.selfTest=selfTest;taskbarEnabled=!selfTest||Array.IndexOf(arguments,"--taskbar-self-test")>=0;this.report=report;this.arguments=arguments;url="http://localhost:"+port;
         Text="WriterHelper — рабочее место автора";Width=1440;Height=960;MinimumSize=new Size(800,600);StartPosition=FormStartPosition.CenterScreen;
         Icon=new Icon(Path.Combine(root,"desktop","WriterHelper.ico"));
         browser.Dock=DockStyle.Fill;Controls.Add(browser);loading.Dock=DockStyle.Fill;loading.Text="WriterHelper запускается…";loading.TextAlign=ContentAlignment.MiddleCenter;loading.BackColor=Color.FromArgb(23,30,26);loading.ForeColor=Color.FromArgb(236,237,231);Controls.Add(loading);
@@ -54,12 +55,13 @@ internal sealed class StudioWindow:Form {
         var menu=new ContextMenuStrip();menu.Items.Add("Открыть WriterHelper",null,delegate{RestoreWindow();});menu.Items.Add("Свернуть в трей",null,delegate{HideToTray();});menu.Items.Add(new ToolStripSeparator());menu.Items.Add("Выход",null,async delegate{await ExitAsync();});tray.ContextMenuStrip=menu;tray.DoubleClick+=delegate{RestoreWindow();};
         Resize+=delegate{if(WindowState==FormWindowState.Minimized)HideToTray();};
         FormClosing+=delegate(object sender,FormClosingEventArgs e){if(!exiting){if(e.CloseReason==CloseReason.UserClosing){e.Cancel=true;HideToTray();}else{e.Cancel=true;BeginInvoke(new Action(async delegate{await ExitAsync();}));}}};
-        Shown+=async delegate{await StartAsync(port);};
-        if(selfTest){ShowInTaskbar=false;Opacity=0;}
+        Shown+=async delegate{if(started)return;started=true;await StartAsync(port);};
+        ShowInTaskbar=taskbarEnabled;if(selfTest){Opacity=0;}
         http.Timeout=TimeSpan.FromSeconds(2);
     }
-    internal void RestoreWindow(){activations++;Show();WindowState=FormWindowState.Normal;ShowInTaskbar=!selfTest;ShowWindow(Handle,9);SetForegroundWindow(Handle);Activate();browser.Focus();}
-    void HideToTray(){Hide();ShowInTaskbar=false;}
+    internal void RestoreWindow(){activations++;Show();WindowState=FormWindowState.Normal;ShowWindow(Handle,9);SetForegroundWindow(Handle);Activate();browser.Focus();}
+    // Hide removes the taskbar button without recreating the native window that hosts WebView2.
+    void HideToTray(){Hide();}
     async Task StartAsync(int port){
         try{
             Directory.CreateDirectory(data);Directory.CreateDirectory(profile);
@@ -80,6 +82,20 @@ internal sealed class StudioWindow:Form {
             await browser.EnsureCoreWebView2Async(environment);
             Log("Browser control ready");
             browser.CoreWebView2.Settings.AreDevToolsEnabled=selfTest;browser.CoreWebView2.Settings.IsStatusBarEnabled=false;
+            browser.CoreWebView2.DownloadStarting+=delegate(object sender,CoreWebView2DownloadStartingEventArgs e){
+                if(selfTest&&Array.IndexOf(arguments,"--download-self-test")>=0){
+                    e.ResultFilePath=Path.Combine(data,"export-self-test.txt");e.Handled=true;
+                    var operation=e.DownloadOperation;
+                    operation.StateChanged+=delegate{if(operation.State==CoreWebView2DownloadState.Completed)downloadTest.TrySetResult(true);else if(operation.State==CoreWebView2DownloadState.Interrupted)downloadTest.TrySetResult(false);};
+                    return;
+                }
+                using(var save=new SaveFileDialog()){
+                    save.Title="Выгрузить книгу";save.FileName=Path.GetFileName(e.ResultFilePath);save.OverwritePrompt=true;
+                    string extension=Path.GetExtension(save.FileName).TrimStart('.');save.DefaultExt=extension;save.AddExtension=true;
+                    save.Filter="Файл книги (*."+extension+")|*."+extension+"|Все файлы (*.*)|*.*";
+                    if(save.ShowDialog(this)==DialogResult.OK){e.ResultFilePath=save.FileName;e.Handled=true;}else e.Cancel=true;
+                }
+            };
             browser.CoreWebView2.NavigationStarting+=delegate(object s,CoreWebView2NavigationStartingEventArgs e){Uri target;if(Uri.TryCreate(e.Uri,UriKind.Absolute,out target)&&target.GetLeftPart(UriPartial.Authority)!=url){e.Cancel=true;OpenLink(e.Uri);}};
             browser.CoreWebView2.NewWindowRequested+=delegate(object s,CoreWebView2NewWindowRequestedEventArgs e){e.Handled=true;OpenLink(e.Uri);};
             var loaded=new TaskCompletionSource<bool>();browser.CoreWebView2.NavigationCompleted+=delegate(object s,CoreWebView2NavigationCompletedEventArgs e){if(e.IsSuccess)loaded.TrySetResult(true);else loaded.TrySetException(new Exception("Не удалось открыть интерфейс: "+e.WebErrorStatus));};
@@ -113,13 +129,28 @@ internal sealed class StudioWindow:Form {
         string title=await browser.CoreWebView2.ExecuteScriptAsync("document.title");
         string populated=await browser.CoreWebView2.ExecuteScriptAsync("!!document.querySelector('.studio')");if(populated!="true")throw new Exception("Интерфейс не отрисован");
         string persisted=await browser.CoreWebView2.ExecuteScriptAsync("localStorage.getItem('writerhelper-desktop-smoke')==='saved'");await browser.CoreWebView2.ExecuteScriptAsync("localStorage.setItem('writerhelper-desktop-smoke','saved')");
+        bool downloadChecked=false;
+        if(Array.IndexOf(arguments,"--download-self-test")>=0){
+            await browser.CoreWebView2.ExecuteScriptAsync("(async()=>{const state=await(await fetch('/api/state')).json();const book=state.entities.find(e=>e.type==='book');const response=await fetch('/api/book/export',{method:'POST',headers:{'Content-Type':'application/json','X-Writer-Client':'1'},body:JSON.stringify({book:book.id,format:'txt'})});if(!response.ok)throw new Error('Export failed');const link=document.createElement('a');link.href=URL.createObjectURL(await response.blob());link.download='export-self-test.txt';document.body.append(link);link.click();link.remove();})()");
+            if(await Task.WhenAny(downloadTest.Task,Task.Delay(10000))!=downloadTest.Task||!await downloadTest.Task||!File.Exists(Path.Combine(data,"export-self-test.txt")))throw new Exception("Не пройдена проверка скачивания книги");
+            downloadChecked=true;
+        }
+        IntPtr originalHandle=Handle,originalBrowserHandle=browser.Handle;
+        await browser.CoreWebView2.ExecuteScriptAsync("window.writerTrayDraft={text:'Несохранённая правка 🙂',selection:[2,8]};");
         WindowState=FormWindowState.Minimized;await Task.Delay(50);bool minimized=!Visible&&tray.Visible;
         RestoreWindow();bool restored=Visible&&WindowState==FormWindowState.Normal;Close();bool closedToTray=!Visible&&tray.Visible&&!IsDisposed;
         int count=activations;var second=Process.Start(new ProcessStartInfo(Application.ExecutablePath,"--data-dir \""+data+"\" --profile-dir \""+profile+"\" --port "+new Uri(url).Port){UseShellExecute=false,CreateNoWindow=true});await Task.Run(()=>second.WaitForExit(5000));await Task.Delay(200);bool singleton=second.HasExited&&second.ExitCode==0&&activations>count;
+        bool stableHandle=Handle==originalHandle&&browser.Handle==originalBrowserHandle;
+        for(int cycle=0;cycle<3;cycle++){Close();await Task.Delay(50);if(Visible)throw new Exception("Окно осталось видно после крестика");RestoreWindow();await Task.Delay(50);if(Handle!=originalHandle||browser.Handle!=originalBrowserHandle)stableHandle=false;}
+        bool draftInMemory=await browser.CoreWebView2.ExecuteScriptAsync("window.writerTrayDraft?.text==='Несохранённая правка 🙂'&&window.writerTrayDraft?.selection[1]===8")=="true";
+        string stillRendered=await browser.CoreWebView2.ExecuteScriptAsync("!!document.querySelector('.studio')");
         Directory.CreateDirectory(Path.GetDirectoryName(report));using(var output=File.Create(Path.ChangeExtension(report,".png")))await browser.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,output);
+        if(!draftInMemory)throw new Exception("Состояние редактора потеряно при закрытии в трей");
+        if(!stableHandle)throw new Exception("При сворачивании в трей пересоздано окно WebView2");
+        if(stillRendered!="true")throw new Exception("Интерфейс потерян после восстановления из трея");
         if(!minimized||!restored||!closedToTray||!singleton)throw new Exception("Не пройдена проверка трея или повторного запуска");
         bool flushed=await FlushDrafts();if(!flushed)throw new Exception("Не пройдена проверка сохранения черновиков");
-        WriteReport(new Dictionary<string,object>{{"status","PASS"},{"title",title},{"url",url},{"data",data},{"serverOwned",server!=null},{"minimizedToTray",minimized},{"closedToTray",closedToTray},{"restored",restored},{"singleInstance",singleton},{"profilePersisted",persisted=="true"},{"draftFlush",flushed}});
+        WriteReport(new Dictionary<string,object>{{"status","PASS"},{"title",title},{"url",url},{"data",data},{"serverOwned",server!=null},{"minimizedToTray",minimized},{"closedToTray",closedToTray},{"restored",restored},{"singleInstance",singleton},{"stableWindowHandles",stableHandle},{"inMemoryStatePreserved",draftInMemory},{"interfaceAfterRestore",stillRendered=="true"},{"taskbarEnabled",taskbarEnabled},{"profilePersisted",persisted=="true"},{"draftFlush",flushed},{"bookDownload",downloadChecked}});
         await ExitAsync();
     }
     void WriteReport(Dictionary<string,object> value){Directory.CreateDirectory(Path.GetDirectoryName(report));File.WriteAllText(report,new JavaScriptSerializer().Serialize(value),Encoding.UTF8);}

@@ -1,4 +1,6 @@
 import http from 'node:http';
+import { generateInsertion } from './insertion.js';
+import { makeTextPacket } from './text-packet.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +11,7 @@ import { effectiveScheme, prepareScheme, makePacket, validateGraph, validateResu
 import { Secrets, callProvider, listModels } from './provider.js';
 import { inspectJsonBundle, importJsonBundle } from './json-importer.js';
 import { readJsonDirectory } from './directory-importer.js';
+import { bookExportSummary, exportBook } from './book-export.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export function makeServer(store, { dev = false, mockProvider, middleware } = {}) {
@@ -33,6 +36,12 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         const chunks = []; let bytes = 0; for await (const chunk of req) { chunks.push(chunk); bytes += chunk.length; if (bytes > 15 * 1024 * 1024) fail('Запрос слишком большой', 413); } const raw = Buffer.concat(chunks).toString('utf8'); body = raw ? JSON.parse(raw) : {};
       }
       if (route === '/api/state' && req.method === 'GET') return reply(res, 200, { entities: store.all().map(x => x.type === 'connection' ? { ...x, hasKey: secrets.has(x.id) } : x), dev, initialSelection:store.db.prepare("SELECT value FROM meta WHERE key='starterSelection'").get()?.value||'' });
+      if (route === '/api/book/export/summary' && req.method === 'GET') return reply(res, 200, bookExportSummary(store, url.searchParams.get('book')));
+      if (route === '/api/book/export' && req.method === 'POST') {
+        const file = await exportBook(store, body);
+        res.writeHead(200, { 'Content-Type':file.mime, 'Content-Disposition':`attachment; filename="book.${body.format}"; filename*=UTF-8''${encodeURIComponent(file.filename)}`, 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff' });
+        return res.end(file.data);
+      }
       if (route === '/api/import/json/format' && req.method === 'GET') { res.writeHead(200,{'Content-Type':'text/markdown; charset=utf-8','X-Content-Type-Options':'nosniff'});return res.end(fs.readFileSync(path.join(root,'docs','json-import-format.md'))); }
       if (route === '/api/entity' && req.method === 'POST') {
         const { entity, expected } = body;
@@ -90,6 +99,24 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         const old = value.id && store.get(value.id); const saved = store.save({ ...value, type: 'connection', reviewModel: value.reviewModel || value.model }, old?.rev); if (key !== undefined) secrets.set(saved.id, key); return reply(res, 200, { ...saved, hasKey: secrets.has(saved.id) });
       }
       if (route === '/api/models' && req.method === 'POST') return reply(res, 200, await listModels(store.get(body.id), secrets));
+      if(route==='/api/text/context'&&req.method==='POST')return reply(res,200,makeTextPacket(store,body,store.get(body.connection)||{}).context);
+      if (route === '/api/text/query' && req.method === 'POST') {
+        if (body.mode!==undefined&&!['revise','insert'].includes(body.mode)) fail('Неизвестная операция с текстом');
+        if (typeof body.text !== 'string' || body.mode!=='insert'&&!body.text.trim()) fail('Сначала выделите текст');
+        if(body.mode&&((body.before!==undefined&&typeof body.before!=='string')||(body.after!==undefined&&typeof body.after!=='string')))fail('Неверный контекст поля');
+        if (typeof body.task !== 'string' || !body.task.trim()) fail('Введите запрос по тексту');
+        const connection = store.get(body.connection);
+        if (!connection || connection.type !== 'connection') fail('Выберите подключение ИИ');
+        const packet=makeTextPacket(store,body,connection);const context=packet.context;
+        if (connection.context && Math.ceil(JSON.stringify(packet).length / 2) + (connection.maxOutput || 8000) > connection.context) fail('Выделение и запрос превышают контекст модели. Выделите меньший фрагмент.');
+        const controller = new AbortController(); pending.set(controller, controller);
+        const abort = () => { if (!res.writableEnded) controller.abort(); }; res.on('close', abort);
+        try {
+          const generated=packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const answer=generated.text;
+          if (typeof answer !== 'string' || !answer.trim()) fail('ИИ вернул пустой ответ. Повторите запрос.');
+          return reply(res, 200, { answer, context, insertionChecks:generated.checks });
+        } finally { pending.delete(controller); res.off('close', abort); }
+      }
       if (route === '/api/connection/test' && req.method === 'POST') {
         const connection = store.get(body.id); if (!connection) fail('Подключение не найдено');
         const packet = { target: { title: 'Проверка подключения' }, task: 'Ответь одним словом: Готово', sources: [], prompts: [], contract: 'text', model: connection.model };
@@ -104,10 +131,10 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         const candidate = store.save({ type: 'candidate', title: target.title, status: 'running', valid: false, packet, content: '', reviews: [], project: ancestry(store, target).find(x => x.type === 'project')?.id });
         const controller = new AbortController(); pending.set(candidate.id, controller);
         (async () => { try {
-          const content = await (mockProvider || callProvider)(store.get(packet.connection), packet, secrets, controller.signal);
+          const connection=store.get(packet.connection);const generated=packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const content=generated.text;
           const current = store.get(candidate.id); if (controller.signal.aborted || current.status === 'cancelled') return;
           let valid = true, formatError = ''; try { validateResult(packet.contract, content); } catch (e) { valid = false; formatError = e.message; }
-          store.save({ ...current, status: 'ready', content, valid, formatError }, current.rev);
+          store.save({ ...current, status: 'ready', content, valid, formatError, insertionChecks:generated.checks }, current.rev);
         } catch (e) { const c = store.get(candidate.id); if (c.status !== 'cancelled') store.save({ ...c, status: controller.signal.aborted ? 'cancelled' : 'error', error: e.message.includes('HTTP') || e.status ? e.message : 'Запрос не завершён. Проверьте сервер, протокол и тайм-аут.' }, c.rev); } finally { pending.delete(candidate.id); } })();
         return reply(res, 200, candidate);
       }

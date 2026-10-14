@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { chromium, expect } from '@playwright/test';
+import { Store, createProject, createBook, createChapter, children } from '../server/store.js';
+import { makeServer } from '../server/index.js';
+fs.mkdirSync("test-data",{recursive:true});
+const dir=fs.mkdtempSync(path.resolve('test-data/generation-target-')),store=new Store(dir);
+const project=createProject(store,'Привязка генерации'),book=createBook(store,project.id,'Первая книга',1),docs=children(store,book.id);
+const chapters=[1,11].map(n=>{const c=createChapter(store,docs.find(e=>e.type==='plan').id,n,`Название главы ${n}`);return store.save({...c,content:`События главы ${n}.`},c.rev);});
+const plot=docs.find(e=>e.type==='plot');store.save({...plot,content:chapters.map(c=>`## Глава ${c.number}. ${c.title}\n${c.content}`).join('\n\n')},plot.rev);
+const manuscripts=chapters.map(c=>{const m=children(store,c.id,'manuscript')[0];return store.save({...m,content:`Текст главы ${c.number}.`},m.rev);});
+const scenes=chapters.map(c=>store.save({type:'scene',parent:children(store,c.id,'scenes')[0].id,title:'Сцена 1',number:1,content:'',fields:{номер:1,атмосфера:'Тишина',сюжет:c.content,персонажи:[],дополнительные_детали:[]}}));
+const candidate=(target,title)=>store.save({type:'candidate',title,project:project.id,status:'ready',valid:true,content:'Предложенный текст',reviews:[],packet:{target:{id:target.id,rev:target.rev,title:target.title,type:target.type},prompts:[],sources:[]}});
+candidate(scenes[0],'Сцена 1');candidate(scenes[1],'Сцена 1');const own=candidate(manuscripts[1],'Рукопись');
+const second=createBook(store,project.id,'Вторая книга',2),world=children(store,second.id,'world')[0];
+store.save({type:'connection',title:'Тестовый ИИ',kind:'api',model:'mock',context:262144,maxOutput:1000});
+const packets=[],server=makeServer(store,{mockProvider:async(_connection,packet)=>{packets.push(packet);return 'Новый текст текущего материала.';}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:1500,height:950}}),errors=[];
+page.on('pageerror',e=>errors.push(e.message));
+await page.addInitScript(id=>{if(!localStorage.getItem('writer-studio-ui-v1'))localStorage.setItem('writer-studio-ui-v1',JSON.stringify({selected:id,tab:'ai'}));},manuscripts[1].id);
+const search=async(text,title,index=0)=>{
+ await page.getByRole('button',{name:'Поиск',exact:true}).click();await page.getByLabel('Найти в проекте').fill(text);
+ await page.locator('.search-results button').filter({has:page.getByText(title,{exact:true})}).nth(index).click();
+};
+try{
+ await page.goto(`http://127.0.0.1:${server.address().port}`);
+ await expect(page.getByLabel('Текст главы')).toHaveValue(manuscripts[1].content);
+ await expect(page.locator('.target-summary')).toContainText('Глава 11.');await expect(page.locator('.target-summary')).toContainText('Рукопись');
+ await expect(page.getByLabel('Цель генерации')).toHaveCount(0);
+ await expect(page.locator('.results button')).toHaveCount(1);await expect(page.locator('.results')).not.toContainText('Сцена 1');
+ await page.locator('.results button').click();await expect(page.getByLabel('Предложенный результат')).toHaveValue(own.content);
+ await expect(page.getByRole('button',{name:'Сгенерировать',exact:true})).toBeDisabled();
+ await page.getByRole('button',{name:'Вернуться к материалу',exact:true}).click();await expect(page.locator('.target-summary')).toContainText('Глава 11.');
+ await page.getByLabel('Что создать или изменить').fill('Перепиши текущую рукопись');await page.getByRole('button',{name:'Посмотреть контекст',exact:true}).click();
+ await expect(page.getByText('Полный запрос',{exact:true})).toBeVisible();await page.getByRole('button',{name:'Сгенерировать',exact:true}).click();await page.getByRole('heading',{name:'Кандидат · Готов к проверке'}).waitFor();
+ assert.equal(packets.length,1);assert.equal(packets[0].target.id,manuscripts[1].id);assert.equal(packets[0].task,'Перепиши текущую рукопись');assert.equal(store.get(manuscripts[1].id).content,manuscripts[1].content);
+ await page.getByRole('button',{name:'Вернуться к материалу',exact:true}).click();
+ await search('Сцена 1','Сцена 1');await expect(page.locator('.target-summary')).toContainText('Глава 1.');
+ await expect(page.locator('.results button')).toHaveCount(1);await expect(page.locator('.results button')).toContainText('Глава 1.');await expect(page.locator('.results button')).not.toContainText('Глава 11.');
+ await search('Сцена 1','Сцена 1',1);await expect(page.locator('.target-summary')).toContainText('Глава 11.');await expect(page.locator('.results button')).toHaveCount(1);await expect(page.locator('.results button')).toContainText('Глава 11.');
+ // A context request finishing after navigation must never start generation.
+ await search('Текст главы 11.','Рукопись');await expect(page.getByLabel('Текст главы')).toHaveValue(manuscripts[1].content);
+ let release;const gate=new Promise(r=>release=r);let received;const waiting=new Promise(r=>received=r);
+ await page.route('**/api/packet',async route=>{received();await gate;await route.continue();});
+ await page.getByRole('button',{name:'Сгенерировать',exact:true}).click();await waiting;
+ await search('Сцена 1','Сцена 1');release();await expect(page.getByRole('alert')).toContainText('Выбранный материал изменился');
+ assert.equal(packets.length,1);await page.unroute('**/api/packet');await expect(page.locator('.target-summary')).toContainText('Глава 1.');
+ await page.getByRole('combobox',{name:'Активная книга'}).selectOption(second.id);await expect(page.getByRole('button',{name:'Сгенерировать',exact:true})).toHaveCount(0);await expect(page.locator('.results button')).toHaveCount(0);
+ await search('Описание мира','Описание мира',1);await expect(page.locator('.target-summary')).toContainText('Книга 2. Вторая книга / Описание мира');await expect(page.getByText('Полный запрос',{exact:true})).toHaveCount(0);
+ await page.getByLabel('Что создать или изменить').fill('Опиши мир второй книги');await page.getByRole('button',{name:'Сгенерировать',exact:true}).click();await page.getByRole('heading',{name:'Кандидат · Готов к проверке'}).waitFor();
+ assert.equal(packets.at(-1).target.id,world.id);assert.equal(store.get(manuscripts[0].id).content,manuscripts[0].content);assert.deepEqual(errors,[]);
+ console.log('PASS: selected manuscript/scene/book targets, full location labels, scoped results, candidate return, real context and mock generation target, unsupported folders blocked');
+}finally{await browser.close();await new Promise(r=>server.close(r));store.close();}

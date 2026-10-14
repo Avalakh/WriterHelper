@@ -17,7 +17,7 @@ function NumberControl({label,value,min,max,step=1,change}:{label:string;value:n
 }
 
 export function PreviewControls({fields,width,zoom,change,setZoom}:{fields:Record<string,any>;width:number;zoom:number;change:(fields:Record<string,any>)=>void;setZoom:(zoom:number)=>void}){
- const number=(key:string,label:string,value:number,min:number,max:number)=><NumberControl key={key} label={label} value={value} min={min} max={max} change={n=>change({...fields,[key]:n,...(key==='width'?{fitWidth:false}:{})})}/>;
+ const number=(key:string,label:string,value:number,min:number,max:number)=><NumberControl key={key} label={label} value={value} min={min} max={max} change={n=>change({...fields,[key]:n,...(['width','height'].includes(key)?{fitWidth:false,width,...(key==='width'?{width:n}:{})}:{})})}/>;
  return <div className="preview-controls" role="group" aria-label="Управление предпросмотром">
   {number('size','Шрифт, px',fields.size||17,10,40)}{number('heading','Заголовки, px',fields.heading||26,12,60)}
   <NumberControl label="Масштаб, %" value={zoom} min={25} max={250} step={10} change={setZoom}/>

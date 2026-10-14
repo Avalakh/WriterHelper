@@ -1,0 +1,4 @@
+# Source snapshots are addressed by SHA-256; Git must preserve their exact bytes.
+books/iron-mind/data/sources/* -text
+books/iron-mind/data/writer.sqlite binary
+books/iron-mind/*.json text eol=lf

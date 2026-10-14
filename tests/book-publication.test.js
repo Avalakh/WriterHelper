@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { Store, createProject, createBook, createChapter, children } from '../server/store.js';
+import { publishBook } from '../scripts/publish-book.js';
+import { parseJsonBundle } from '../server/json-importer.js';
+
+test('Book publication is one-way, includes edited prose and history, removes runtime credentials and records later edits',t=>{
+ fs.mkdirSync('test-data',{recursive:true});
+ const root=fs.mkdtempSync(path.resolve('test-data/book-publication-')),source=path.join(root,'live'),output=path.join(root,'published');
+ const store=new Store(source);t.after(()=>store.close());
+ const project=createProject(store,'Fixture'),book=createBook(store,project.id,'Book',1),chapter=createChapter(store,children(store,book.id,'plan')[0].id,1,'Chapter');
+ const original=children(store,chapter.id,'manuscript')[0];
+ const snapshot=store.snapshot(Buffer.from('Original source'));
+ const edited=store.save({...original,content:'Author local edit',provenance:{snapshot,sha256:snapshot,historicalPath:'C:\\Private\\book.md'}},original.rev);
+ store.save({type:'connection',id:'private-connection',title:'Private',url:'http://private.invalid',apiToken:'private-auth-fixture'});
+ const candidate=store.save({type:'candidate',title:'Private candidate',content:'private-response-fixture'});store.save({...candidate,content:'private-response-updated'},candidate.rev);
+ fs.mkdirSync(path.join(source,'desktop-browser'));fs.writeFileSync(path.join(source,'desktop-browser','private.txt'),'private-browser-fixture');
+ const before=store.all(),history=store.versions(edited.id);
+ const report=publishBook(source,output,project.id);
+ assert.equal(report.written,1);assert.deepEqual(store.all(),before);assert.deepEqual(store.versions(edited.id),history);
+ const files=['project.json','book-1.json'].map(name=>({name,content:fs.readFileSync(path.join(output,name),'utf8')}));
+ const parsed=parseJsonBundle(files);assert.equal(parsed.values.find(x=>x.id===edited.id).content,'Author local edit');
+ const published=new DatabaseSync(path.join(output,'data','writer.sqlite'),{readOnly:true});
+ assert.equal(published.prepare("SELECT count(*) AS n FROM entities WHERE type IN ('connection','packet','candidate','import-report')").get().n,0);
+ assert.equal(published.prepare('SELECT count(*) AS n FROM history WHERE id=?').get(edited.id).n,1);published.close();
+ const bytes=fs.readFileSync(path.join(output,'data','writer.sqlite')).toString('utf8');assert.ok(!bytes.includes('private-auth-fixture'));assert.ok(!bytes.includes('private-response-fixture'));assert.ok(!bytes.includes('C:\\Private'));
+ assert.ok(!fs.existsSync(path.join(output,'data','desktop-browser')));assert.equal(fs.readFileSync(path.join(output,'data','sources',snapshot),'utf8'),'Original source');
+ const firstBytes=fs.readFileSync(path.join(output,'data','writer.sqlite'));publishBook(source,output,project.id);assert.deepEqual(fs.readFileSync(path.join(output,'data','writer.sqlite')),firstBytes,'Unchanged book must not create a binary Git change');
+ store.save({...edited,content:'Next author revision'},edited.rev);
+ publishBook(source,output,project.id);assert.equal(JSON.parse(fs.readFileSync(path.join(output,'book-1.json'))).book.chapters[0].manuscript.content,'Next author revision');
+ assert.throws(()=>publishBook(source,source),/вне рабочей папки/);assert.throws(()=>publishBook(source,root),/не заменять/);
+});

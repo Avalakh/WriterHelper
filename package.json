@@ -1,6 +1,6 @@
 {
   "name": "writer-helper",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,8 @@
     "test": "node --test tests/*.test.js",
     "test:startup": "node tests/startup.js",
     "test:fragments": "node tests/manuscript-generation-ui.js",
-    "import:json": "node scripts/import-json.js"
+    "import:json": "node scripts/import-json.js",
+    "book:publish": "node scripts/publish-book.js"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.14.1",

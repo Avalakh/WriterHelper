@@ -1,0 +1,675 @@
+{
+  "schema_version": "1.0.0",
+  "book_id": "run-002",
+  "records": [
+    {
+      "id": "b2-web-era-context",
+      "record_kind": "external-claim",
+      "research_question": "What broad political and security atmosphere applies near the Book 2 window?",
+      "source_type": "web-official",
+      "source_title": "The Acolyte Explained: Lost / Found and Revenge / Justice",
+      "branch": "Canon",
+      "source_era": "roughly one hundred years before the Skywalker saga; earlier comparator near the Book 2 target",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/the-acolyte-highlights-lost-found-revenge-justice",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The late High Republic is publicly tranquil and the Jedi are peacekeepers in their prime, while commercial freighters, dangerous repair work, crime and attempts to evade Republic rules coexist.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use as a nearby official comparator for a peaceful but uneven living Republic; do not infer exact Book 2 law or calendar.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "security-military",
+      "comparison_status": "transitional",
+      "target_era_evidence": [
+        "b2-web-era-context"
+      ],
+      "relevance_tags": [
+        "late-high-republic",
+        "law",
+        "freighter",
+        "frontier"
+      ],
+      "narrative_uses": [
+        {
+          "function": "institutional-pressure",
+          "goal": "make lawful entry and local danger coexist",
+          "location": "Rubezhnaya-7",
+          "pov": "Perun",
+          "use_statement": "A quiet trade environment can still contain hazardous work and predatory local actors."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-droid-freighter",
+      "record_kind": "external-claim",
+      "research_question": "Can working droids and organic mechanics share ordinary transport labor in the nearby era?",
+      "source_type": "web-official",
+      "source_title": "Pip - The Acolyte | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "late High Republic comparator",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/pip",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "A customized repair droid works as a tool-bearing companion with a distinct helpful personality.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Supports droids as active workers and companions; it does not establish personhood law or universal attitudes.",
+      "era_dependency": "era-invariant",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "same",
+      "target_era_evidence": [
+        "b2-web-droid-freighter"
+      ],
+      "relevance_tags": [
+        "droids",
+        "repair",
+        "personality"
+      ],
+      "narrative_uses": [
+        {
+          "function": "social-pressure",
+          "goal": "show droid individuality through consequential work",
+          "location": "ship and service station",
+          "pov": "Perun and local observers",
+          "use_statement": "Team droids affect outcomes and relationships without a lore lecture about their category."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-transport-polan",
+      "record_kind": "external-claim",
+      "research_question": "What does official material establish about manufactured long-distance transport in the nearby era?",
+      "source_type": "web-official",
+      "source_title": "Polan - The Acolyte | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "late High Republic comparator",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/polan",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "A named shipbuilder manufactures a versatile transport used for ordinary and long-distance missions in the High Republic age.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Supports visible manufacturers and routine long-distance transport, not the exact capabilities or legal status of the ancient Long Voyage.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "ships-transport-production",
+      "comparison_status": "transitional",
+      "target_era_evidence": [
+        "b2-web-transport-polan"
+      ],
+      "relevance_tags": [
+        "manufacturers",
+        "transport",
+        "ships"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "goal": "make the modern transport economy tangible",
+          "location": "port and traffic lanes",
+          "pov": "Perun",
+          "use_statement": "Manufacturing marks and mission-specific transport create comparison, repair choices and social status."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-frontier-connectivity",
+      "record_kind": "external-claim",
+      "research_question": "How should frontier routes and communications differ from a uniformly connected modern network?",
+      "source_type": "web-official",
+      "source_title": "What Is Star Wars: The High Republic?",
+      "branch": "Canon",
+      "source_era": "earlier High Republic",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/what-is-star-wars-the-high-republic",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "Outer Rim integration, hyperspace mapping and communications infrastructure developed unevenly during the High Republic, so frontier connection is an institution and project rather than a universal background constant.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use only to preserve uneven reach and route dependence; exact Book 2 relays and travel times remain local evidence.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "communications-information",
+      "comparison_status": "earlier-form",
+      "target_era_evidence": [
+        "b2-web-frontier-connectivity",
+        "b2-web-era-context"
+      ],
+      "relevance_tags": [
+        "frontier",
+        "communications",
+        "hyperspace"
+      ],
+      "narrative_uses": [
+        {
+          "function": "adventure-impulse",
+          "goal": "make every route and message carry delay and risk",
+          "location": "trade branch and hidden-home link",
+          "pov": "Perun",
+          "use_statement": "Indirect communication and incomplete route knowledge force choices without claiming a universal network rule."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-cultures-republic",
+      "record_kind": "external-claim",
+      "research_question": "Can the Republic feel multiworld and culturally diverse rather than socially uniform?",
+      "source_type": "web-official",
+      "source_title": "Daniel Jose Older on Race to Crashpoint Tower",
+      "branch": "Canon",
+      "source_era": "High Republic comparator",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/daniel-jose-older-race-to-crashpoint-tower-interview",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The Republic is described as inclusive and expanding through infrastructure, with many worlds displaying distinct cultures and meeting one another.",
+      "confidence": "medium",
+      "disposition": "adapted",
+      "adaptation_note": "Use diversity as independent social pressure and opportunity; do not invent uniform etiquette or make cultures decorative.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "cultures-languages-etiquette",
+      "comparison_status": "transitional",
+      "target_era_evidence": [
+        "b2-web-cultures-republic"
+      ],
+      "relevance_tags": [
+        "cultures",
+        "republic",
+        "infrastructure"
+      ],
+      "narrative_uses": [
+        {
+          "function": "cultural-friction",
+          "goal": "make negotiation depend on other actors' customs and interests",
+          "location": "Rubezhnaya-7",
+          "pov": "Perun",
+          "use_statement": "Species and cultures change what must be explained, risked or exchanged in a scene."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-criminal-networks",
+      "record_kind": "external-claim",
+      "research_question": "Does the era support organized non-state raiders with structure and privileged routes?",
+      "source_type": "web-official",
+      "source_title": "Star Wars Inside Intel: The Nihil Hierarchy",
+      "branch": "Canon",
+      "source_era": "earlier High Republic",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/star-wars-inside-intel-the-nihil-hierarchy",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "High Republic raiders can possess layered leadership, voting rules, internal factions and privileged hyperspace knowledge while contesting Republic reach.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Supports the possibility of structured criminal pressure; Vector is an original local AU network and must not inherit Nihil names, organization or capabilities.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "security-military",
+      "comparison_status": "earlier-form",
+      "target_era_evidence": [
+        "b2-web-criminal-networks",
+        "b2-web-era-context"
+      ],
+      "relevance_tags": [
+        "crime",
+        "hierarchy",
+        "routes",
+        "frontier"
+      ],
+      "narrative_uses": [
+        {
+          "function": "institutional-pressure",
+          "goal": "make the defeated local cell reveal a larger unseen structure",
+          "location": "Book 2 interludes and ending",
+          "pov": "external syndicate POV",
+          "use_statement": "The higher threat acts through orders, information and patient surveillance, not an imported lore faction."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-web-bomarr-existence",
+      "record_kind": "external-claim",
+      "research_question": "What target-relevant external evidence supports the existence of the B'omarr, and what remains unproved?",
+      "source_type": "web-official",
+      "source_title": "Teth Monastery | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "monastery exists before and during the Clone Wars; exact Book 2 practice unstated",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/teth-monastery",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "Official material identifies a Teth monastery as a former sacred temple of the B'omarr monks and shows its later reuse, but does not establish Perun's exact wandering-monk practice, body doctrine, scanner profile or target-window recognition.",
+      "confidence": "high",
+      "disposition": "reference-only",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "cultures-languages-etiquette",
+      "comparison_status": "unknown",
+      "target_era_evidence": [
+        "b2-web-bomarr-existence"
+      ],
+      "relevance_tags": [
+        "bomarr",
+        "cover",
+        "culture"
+      ],
+      "narrative_uses": [
+        {
+          "function": "cultural-friction",
+          "goal": "bound the credibility risk of Perun's public cover",
+          "location": "all organic contacts",
+          "pov": "Perun",
+          "use_statement": "The cover creates scrutiny and behavioral constraints; unverified doctrine is not narrated as external fact."
+        }
+      ],
+      "conflicts": [
+        "The active manuscript treats the exact cover and scanner response as workable; external evidence here proves only the order and monastery, so author approval remains required."
+      ]
+    },
+    {
+      "id": "b2-atmo-droid-partner",
+      "record_kind": "atmosphere-observation",
+      "research_question": "What high-level source atmosphere can guide droid participation without copying prose?",
+      "source_type": "local-primary-work",
+      "source_title": "Звёздные войны. Эпизод I: Скрытая угроза",
+      "branch": "Legends",
+      "source_era": "future source narrative relative to Book 2",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 1. Скрытая угроза.fb2",
+        "sha256": "6ee4b7a50787d837cf4edac0faf9778c92269fa4865beee2a4730ea251a5d398",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-i-phantom-menace/body/1/section/9/paragraph/837",
+        "bibliography": {
+          "title": "Звёздные войны. Эпизод I: Скрытая угроза",
+          "author": "Терри Брукс"
+        }
+      },
+      "statement": "A small droid changes survival under pressure through useful action and recognizable initiative.",
+      "confidence": "medium",
+      "disposition": "adapted",
+      "adaptation_note": "Retain only the effect: a droid earns narrative presence through action and consequence. Do not reuse phrasing, scene structure or authorial style.",
+      "era_dependency": "era-invariant",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "same",
+      "target_era_evidence": [
+        "b2-web-droid-freighter"
+      ],
+      "relevance_tags": [
+        "atmosphere",
+        "droids",
+        "action"
+      ],
+      "narrative_uses": [
+        {
+          "function": "adventure-impulse",
+          "goal": "give team droids independent consequential actions",
+          "location": "ship, station and rescue operation",
+          "pov": "Perun",
+          "use_statement": "Initiative is shown in a changed outcome, never by special praise or imitation."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-atmo-lived-in-port",
+      "record_kind": "atmosphere-observation",
+      "research_question": "What high-level source atmosphere can guide an inhabited port without copying source prose?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод IV: Новая Надежда",
+      "branch": "Legends",
+      "source_era": "future source narrative relative to Book 2",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 4  Новая Надежда.fb2",
+        "sha256": "b4703645425a96606f391250c697736324fa383747ffae5b373c082b56f06bb7",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iv-a-new-hope/body/1/section/1/paragraph/1150",
+        "bibliography": {
+          "title": "Эпизод IV: Новая Надежда",
+          "author": "Алан Дин Фостер; Джордж Лукас"
+        }
+      },
+      "statement": "Travel feels wondrous and immediate while remaining dependent on a working ship, calculation, routes and people who can deny access or sell help.",
+      "confidence": "medium",
+      "disposition": "adapted",
+      "adaptation_note": "Use only the adventure effect of mobility constrained by material and social gates; do not copy prose rhythm or episode beats.",
+      "era_dependency": "era-invariant",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "same",
+      "target_era_evidence": [
+        "b2-web-frontier-connectivity",
+        "b2-web-transport-polan"
+      ],
+      "relevance_tags": [
+        "atmosphere",
+        "travel",
+        "port"
+      ],
+      "narrative_uses": [
+        {
+          "function": "adventure-impulse",
+          "goal": "turn legal and technical mobility into story movement",
+          "location": "Rubezhnaya-7 and outbound route",
+          "pov": "Perun",
+          "use_statement": "A berth, route, repair or license matters only when it opens or closes the next dangerous choice."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-anakin-path",
+      "record_kind": "source-event",
+      "research_question": "What remembered source event begins the Anakin chain?",
+      "source_type": "local-primary-work",
+      "source_title": "Звёздные войны. Эпизод I: Скрытая угроза",
+      "branch": "Legends",
+      "source_era": "future Episode I source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 1. Скрытая угроза.fb2",
+        "sha256": "6ee4b7a50787d837cf4edac0faf9778c92269fa4865beee2a4730ea251a5d398",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-i-phantom-menace/body/1/section/14/paragraph/1640",
+        "bibliography": {
+          "title": "Звёздные войны. Эпизод I: Скрытая угроза",
+          "author": "Терри Брукс"
+        }
+      },
+      "statement": "Anakin's discovery and entry into the Jedi path begin the remembered source chain.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Будущее событие источника, а не актуальное свойство целевой эпохи."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "historical-consequence",
+          "goal": "define what Perun prepares to observe without fixing the outcome",
+          "pov": "Perun",
+          "use_statement": "Track premises and preserve choices; do not engineer the child as a plot mechanism."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-clone-war",
+      "record_kind": "source-event",
+      "research_question": "What remembered event militarizes the Republic?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод II: Атака клонов",
+      "branch": "Legends",
+      "source_era": "future Episode II source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 2  Атака клонов.fb2",
+        "sha256": "e3d54ba78b098226c84a62517b44e4774cbfeb3c7ad2f08e43c6d5be95de6d49",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-ii-attack-of-the-clones/body/1/section/23/paragraph/3157",
+        "bibliography": {
+          "title": "Эпизод II: Атака клонов",
+          "author": "Роберт Сальваторе"
+        }
+      },
+      "statement": "The clone army and outbreak of the Clone Wars create the military emergency used in later political collapse.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "historical-consequence",
+          "goal": "focus preparation on institutional and command premises",
+          "pov": "Perun",
+          "use_statement": "Observe enabling chains rather than preserve the war."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-order-sixty-six",
+      "record_kind": "source-event",
+      "research_question": "What remembered event destroys the Jedi's ordinary institutional response?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод III: Месть ситхов",
+      "branch": "Legends",
+      "source_era": "future Episode III source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 3  Месть ситхов.fb2",
+        "sha256": "429bfb855106916cd835abea4ffe3ec3d8d00c33087b6b312dde074d58936ed3",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iii-revenge-of-the-sith/body/1/section/4.2/paragraph/4095",
+        "bibliography": {
+          "title": "Эпизод III: Месть ситхов",
+          "author": "Мэтью Стовер"
+        }
+      },
+      "statement": "Order Sixty-Six turns clone forces against the Jedi.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "historical-consequence",
+          "goal": "prepare independent evidence and safeguards",
+          "pov": "Perun",
+          "use_statement": "Future command compromise is a risk model, never current proof."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-empire",
+      "record_kind": "source-event",
+      "research_question": "What remembered political outcome replaces the Republic?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод III: Месть ситхов",
+      "branch": "Legends",
+      "source_era": "future Episode III source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 3  Месть ситхов.fb2",
+        "sha256": "429bfb855106916cd835abea4ffe3ec3d8d00c33087b6b312dde074d58936ed3",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iii-revenge-of-the-sith/body/1/section/4.3/paragraph/4526",
+        "bibliography": {
+          "title": "Эпизод III: Месть ситхов",
+          "author": "Мэтью Стовер"
+        }
+      },
+      "statement": "Palpatine replaces the Republic with the Empire after consolidating emergency power and removing opposition.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "historical-consequence",
+          "goal": "motivate resilient organization without making the collapse inevitable",
+          "pov": "Perun",
+          "use_statement": "Track premises and protect options rather than reproduce history."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-death-star",
+      "record_kind": "source-event",
+      "research_question": "What remembered industrial-military outcome follows the Empire?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод IV: Новая Надежда",
+      "branch": "Legends",
+      "source_era": "future Episode IV source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 4  Новая Надежда.fb2",
+        "sha256": "b4703645425a96606f391250c697736324fa383747ffae5b373c082b56f06bb7",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iv-a-new-hope/body/1/section/2/paragraph/2314",
+        "bibliography": {
+          "title": "Эпизод IV: Новая Надежда",
+          "author": "Алан Дин Фостер; Джордж Лукас"
+        }
+      },
+      "statement": "The Empire deploys the Death Star and the Alliance destroys it after obtaining plans.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "galactic-scale",
+          "goal": "keep future industrial chains within Perun's strategic horizon",
+          "pov": "Perun",
+          "use_statement": "Do not assume the station, weakness or battle survives earlier divergence."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b2-future-vader-luke",
+      "record_kind": "source-event",
+      "research_question": "What remembered relational outcome matters beyond military power?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод V: Империя наносит ответный удар",
+      "branch": "Legends",
+      "source_era": "future Episodes V-VI source line",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 5  Империя наносит ответный удар.fb2",
+        "sha256": "4540905a515ff01dfe1816095d09b5a6703ffa1e3ec4dd69c8478a14313e913d",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-v-the-empire-strikes-back/body/1/section/1/paragraph/1879",
+        "bibliography": {
+          "title": "Эпизод V: Империя наносит ответный удар",
+          "author": "Дональд Глут"
+        }
+      },
+      "statement": "Vader is Anakin and Luke's father; the eventual victory depends on relationships and choices as well as force.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "source-event",
+        "forecast"
+      ],
+      "narrative_uses": [
+        {
+          "function": "historical-consequence",
+          "goal": "keep human choices central in long-range preparation",
+          "pov": "Perun",
+          "use_statement": "Do not preserve suffering solely to reproduce redemption."
+        }
+      ],
+      "conflicts": []
+    }
+  ]
+}

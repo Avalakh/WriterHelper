@@ -16,3 +16,10 @@ publication/
 *.sqlite*
 secrets*
 *.dpapi.json
+
+# Published author sources; personal runtime data stays ignored.
+!books/iron-mind/data/
+books/iron-mind/data/*
+!books/iron-mind/data/writer.sqlite
+!books/iron-mind/data/sources/
+!books/iron-mind/data/sources/*

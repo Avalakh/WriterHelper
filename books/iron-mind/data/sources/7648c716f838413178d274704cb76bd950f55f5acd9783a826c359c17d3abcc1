@@ -1,0 +1,849 @@
+{
+  "schema_version": "1.0.0",
+  "book_id": "run-001",
+  "records": [
+    {
+      "id": "b1-web-material-high-republic",
+      "record_kind": "external-claim",
+      "research_question": "What material and vehicle design language is admissible near the Book 1 target era?",
+      "source_type": "web-official",
+      "source_title": "Lightsabers & Magic: Visual Effects Supervisor Julian Foddy on The Acolyte",
+      "branch": "Canon",
+      "source_era": "The Acolyte, roughly one century before The Phantom Menace; adjacent comparator rather than an exact date match",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/ilm-the-acolyte-vfx-interview",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The late High Republic is a time of peace whose architecture, clothing, tools, and ships favor deliberate finish, curves, flowing lines, and visible design refinement rather than later wartime brutalism.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use this as an adjacent-era design direction at the author window, not as proof that every world or salvaged object shares one luxury finish.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "material-life-design",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "late-high-republic",
+        "material-design",
+        "ships"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "mixed",
+          "goal": "Узнаваемая материальная культура живой галактики",
+          "scope": "Современная инфраструктура и техника, когда они доступны наблюдению",
+          "pov": "Облик и устройство доступны осмотру; история и современная датировка требуют сведений",
+          "use_statement": "Различия отделки, конструкции и ремонтной практики могут поддерживать атмосферу и восприятие эпохи без обязательного сюжетного последствия."
+        }
+      ],
+      "conflicts": [
+        "The source is an adjacent on-screen comparator and does not establish an exact 70-years-before-birth date."
+      ]
+    },
+    {
+      "id": "b1-web-hyperspace-high-republic",
+      "record_kind": "external-claim",
+      "research_question": "Which hyperspace constraints remain valid near the Book 1 target era?",
+      "source_type": "web-official",
+      "source_title": "Star Wars Inside Intel: Hyperspace",
+      "branch": "Canon",
+      "source_era": "Cross-era official continuity with specific High Republic examples",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/star-wars-inside-intel-hyperspace",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "A ship needs destination coordinates and navigation support to jump safely; bad or incomplete routing can cause collision, forced exit, or stranding, while High Republic exploration still produces unusual new paths.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "The basic navigation hazard is stable; exact route coverage and current beacons at the author window remain local facts that must be observed.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "hyperspace-connectivity",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "hyperspace",
+        "navigation",
+        "infrastructure"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "mixed",
+          "goal": "Причинные пределы навигации",
+          "scope": "Маршруты и гиперпространственные перелёты, если они предусмотрены сценарием",
+          "pov": "Знакомое название не заменяет актуальные навигационные данные",
+          "use_statement": "Учитывать состояние маршрутов и доступность данных; факт не назначает прыжок, его длину или порядок действий команды."
+        }
+      ],
+      "conflicts": [
+        "The source does not prove the specific Quenn or Junkfort routes in the author window."
+      ]
+    },
+    {
+      "id": "b1-web-droid-pip",
+      "record_kind": "external-claim",
+      "research_question": "Can an individualized repair droid with tools and initiative exist near the target era?",
+      "source_type": "web-official",
+      "source_title": "Pip - The Acolyte | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "The Acolyte, late High Republic adjacent to the author window",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/pip",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "A customized handheld repair droid can carry varied tool attachments, offer the right tool, and present a distinct helpful personality.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "This supports droid individuality and practical partnership, not legal personhood or universal social recognition.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "droids",
+      "comparison_status": "same",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "droids",
+        "repair",
+        "personality"
+      ],
+      "narrative_uses": [
+        {
+          "function": "character",
+          "anchor_kind": "mixed",
+          "goal": "Различимость дроидов как персонажей",
+          "scope": "Индивидуальные особенности дроидов и взаимодействие с ними",
+          "pov": "Впечатление строится на доступных действиях, облике и речи",
+          "use_statement": "Индивидуальность совместима с прикладной конструкцией дроида; она сама по себе не задаёт юридический статус или сюжет о признании прав."
+        }
+      ],
+      "conflicts": [
+        "No official target-era source found here establishes autonomous droid ownership or captaincy rights."
+      ]
+    },
+    {
+      "id": "b1-web-economy-meknek",
+      "record_kind": "external-claim",
+      "research_question": "Is repair labor aboard ordinary freight traffic an admissible entry into the living galaxy?",
+      "source_type": "web-official",
+      "source_title": "The Acolyte Explained: Lost / Found and Revenge / Justice",
+      "branch": "Canon",
+      "source_era": "The Acolyte, roughly one century before The Phantom Menace; adjacent comparator",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/the-acolyte-highlights-lost-found-revenge-justice",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "A mechanic can travel on a commercial freighter doing dangerous, complex repair work with a personal droid; ordinary transport labor, law evasion, food shops, and local crime coexist in a nominally peaceful Republic.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use the labor pattern and mixed civil setting; do not copy the named occupation, ship, scene, or episode plot.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "economy-logistics",
+      "comparison_status": "same",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "repair-work",
+        "freighter",
+        "living-galaxy"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "mixed",
+          "goal": "Представление о ремонтном труде в галактике",
+          "scope": "Среда технического обслуживания при её наличии в сценарии",
+          "pov": "Местные условия работы и оплаты требуют доступного источника",
+          "use_statement": "Использовать как опору среды, не как предписание Перуну устраиваться на работу или проходить цепочку регистрации."
+        }
+      ],
+      "conflicts": [
+        "Exact pay systems, licenses, and station rules remain unknown until local contact."
+      ]
+    },
+    {
+      "id": "b1-web-law-republic",
+      "record_kind": "external-claim",
+      "research_question": "What political and legal pressure is visible near the target era?",
+      "source_type": "web-official",
+      "source_title": "Vernestra Rwoh - The Acolyte | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "End of the High Republic, adjacent to the author window",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/vernestra-vern-rwoh",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The Jedi Order has a formal relationship with the Galactic Senate and can face Senate scrutiny and external review; institutional authority is visible rather than frictionless.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use as institutional pressure only after contact; it does not answer ownership, salvage, or droid-rights law.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "law-power",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "republic",
+        "senate",
+        "jedi"
+      ],
+      "narrative_uses": [
+        {
+          "function": "institutional-context",
+          "anchor_kind": "mixed",
+          "goal": "Различать существование институтов и знание местных правил",
+          "scope": "Республиканские учреждения, когда они нужны заданному эпизоду",
+          "pov": "Память о мире не устанавливает актуальную юрисдикцию",
+          "use_statement": "Не выводить конкретное право собственности или обязательную административную сцену из общего внешнего факта."
+        }
+      ],
+      "conflicts": [
+        "Droid legal personhood, salvage title, and captaincy remain unknown."
+      ]
+    },
+    {
+      "id": "b1-web-security-peace",
+      "record_kind": "external-claim",
+      "research_question": "Does a peaceful Republic eliminate local danger and coercion?",
+      "source_type": "web-official",
+      "source_title": "The Acolyte Explained: Lost / Found and Revenge / Justice",
+      "branch": "Canon",
+      "source_era": "The Acolyte, adjacent late-High-Republic comparator",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/the-acolyte-highlights-lost-found-revenge-justice",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The era is publicly described as peaceful and the Jedi as peacekeepers in their prime, yet murder, law evasion, hazardous labor, and uneven local safety remain possible.",
+      "confidence": "high",
+      "disposition": "adapted",
+      "adaptation_note": "Use peace as the large political condition, not as a promise that peripheral ports or salvage fields are safe.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "security-military",
+      "comparison_status": "same",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "peace",
+        "periphery",
+        "risk"
+      ],
+      "narrative_uses": [
+        {
+          "function": "large-world-context",
+          "anchor_kind": "mixed",
+          "goal": "Атмосфера действующей Республики вне всеобщей войны",
+          "scope": "Современная внешняя галактика",
+          "pov": "Локальное наблюдение не даёт полного знания всей Республики",
+          "use_statement": "Общий мирный период не гарантирует местной безопасности и не назначает отдельный конфликт."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b1-web-medicine-bacta",
+      "record_kind": "external-claim",
+      "research_question": "Can later medical assumptions be moved unchanged into the target era?",
+      "source_type": "web-official",
+      "source_title": "What Is Star Wars: The High Republic?",
+      "branch": "Canon",
+      "source_era": "High Republic stories roughly 150 to 300 years before Anakin's birth, earlier than the author window",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/what-is-star-wars-the-high-republic",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "Bacta is described as a new medical advancement during the earlier High Republic; its exact availability, price, and standardization seventy years before Anakin's birth are not established by this source.",
+      "confidence": "high",
+      "disposition": "reference-only",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "medicine",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "medicine",
+        "bacta",
+        "unknown"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "No exact target-window source was accepted for routine bacta availability."
+      ]
+    },
+    {
+      "id": "b1-web-communications-earlier",
+      "record_kind": "external-claim",
+      "research_question": "Can a galaxy-wide communications assumption be carried forward from an earlier High Republic phase?",
+      "source_type": "web-official",
+      "source_title": "SWCA 2022: 10 Things We Learned from The High Republic Panel",
+      "branch": "Canon",
+      "source_era": "High Republic Phase II, materially earlier than the author window",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/news/swca-2022-the-high-republic-panel",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "Earlier frontier communications depend on infrastructure and can resemble courier relay by droids; this does not establish the communications topology at the later Book 1 target window.",
+      "confidence": "high",
+      "disposition": "reference-only",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "communications-information",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "communications",
+        "infrastructure",
+        "unknown"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "The source period is too early to prove HoloNet coverage near the Book 1 exit route."
+      ]
+    },
+    {
+      "id": "b1-web-era-index",
+      "record_kind": "external-claim",
+      "research_question": "Which named era contains the approximate author window after BBY conversion?",
+      "source_type": "web-index",
+      "source_title": "Timeline of galactic history | Wookieepedia",
+      "branch": "Canon",
+      "source_era": "Index places the late High Republic approximately through 100 BBY",
+      "locator": {
+        "kind": "web",
+        "url": "https://starwars.fandom.com/wiki/Timeline_of_galactic_history",
+        "accessed_at": "2026-08-27"
+      },
+      "statement": "The index is useful for discovering that the author window may lie near the late-High-Republic boundary, but it is not admissible evidence for generation or exact BBY conversion.",
+      "confidence": "medium",
+      "disposition": "reference-only",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "historical-memory",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "book-1",
+        "era-index",
+        "discovery-only"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "BBY conversion is intentionally unaccepted until a primary or official date source is chosen."
+      ]
+    },
+    {
+      "id": "b1-atmo-droid-partner",
+      "record_kind": "atmosphere-observation",
+      "research_question": "Which high-level droid atmosphere from Episode I can inform the fanfic without copying prose?",
+      "source_type": "local-primary-work",
+      "source_title": "Звёздные войны. Эпизод I: Скрытая угроза",
+      "branch": "both",
+      "source_era": "Episode I source-event era, later than Book 1",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 1. Скрытая угроза.fb2",
+        "sha256": "6ee4b7a50787d837cf4edac0faf9778c92269fa4865beee2a4730ea251a5d398",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-i-phantom-menace/body/1/section/9/paragraph/837",
+        "bibliography": {
+          "title": "Звёздные войны. Эпизод I: Скрытая угроза",
+          "author": "Терри Брукс"
+        }
+      },
+      "statement": "A small astromech contributes materially under pressure and is perceived through useful action rather than decorative exposition.",
+      "confidence": "medium",
+      "disposition": "adapted",
+      "adaptation_note": "Retain only the action-consequence principle; do not copy scene structure, wording, personality, or beats.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "droids",
+      "comparison_status": "same",
+      "target_era_evidence": [
+        "b1-web-droid-pip"
+      ],
+      "relevance_tags": [
+        "book-1",
+        "atmosphere",
+        "droids",
+        "action-consequence"
+      ],
+      "narrative_uses": [
+        {
+          "function": "character",
+          "anchor_kind": "mixed",
+          "goal": "Живое восприятие индивидуальности дроидов",
+          "scope": "Уже заданные сценарием персонажи-дроиды",
+          "pov": "Характер проявляется в доступных наблюдению реакциях и поведении",
+          "use_statement": "Поддерживать различимость участников без обязательных споров, взаимного спасения или деклараций."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b1-atmo-hyperspace-risk",
+      "record_kind": "atmosphere-observation",
+      "research_question": "Which high-level hyperspace atmosphere from Episode IV can inform the Book 1 exit?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод IV: Новая Надежда",
+      "branch": "both",
+      "source_era": "Episode IV source-event era, later than Book 1",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 4  Новая Надежда.fb2",
+        "sha256": "b4703645425a96606f391250c697736324fa383747ffae5b373c082b56f06bb7",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iv-a-new-hope/body/1/section/1/paragraph/1150",
+        "bibliography": {
+          "title": "Эпизод IV: Новая Надежда",
+          "author": "Алан Дин Фостер; Джордж Лукас"
+        }
+      },
+      "statement": "Hyperspace travel feels immediate and wondrous, but safe arrival still depends on calculation, a working drive, and a trustworthy route.",
+      "confidence": "medium",
+      "disposition": "adapted",
+      "adaptation_note": "Retain the reader effect and causal constraint only; do not imitate the novelization's imagery or sentence rhythm.",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "hyperspace-connectivity",
+      "comparison_status": "same",
+      "target_era_evidence": [
+        "b1-web-hyperspace-high-republic"
+      ],
+      "relevance_tags": [
+        "book-1",
+        "atmosphere",
+        "hyperspace",
+        "wonder",
+        "risk"
+      ],
+      "narrative_uses": [
+        {
+          "function": "wonder",
+          "anchor_kind": "mixed",
+          "goal": "Масштаб галактики и эмоциональное восприятие путешествия",
+          "scope": "Навигация и перелёты в предусмотренных сценарием эпизодах",
+          "pov": "Представление по земным произведениям отличается от личного опыта и измерений",
+          "use_statement": "Сочетать узнаваемый образ с физическими ограничениями, не назначая первый прыжок, сигнал или место в плане."
+        }
+      ],
+      "conflicts": []
+    },
+    {
+      "id": "b1-future-anakin-path",
+      "record_kind": "source-event",
+      "research_question": "Which premise begins the source episode chain Perun remembers?",
+      "source_type": "local-primary-work",
+      "source_title": "Звёздные войны. Эпизод I: Скрытая угроза",
+      "branch": "both",
+      "source_era": "Episode I source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 1. Скрытая угроза.fb2",
+        "sha256": "6ee4b7a50787d837cf4edac0faf9778c92269fa4865beee2a4730ea251a5d398",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-i-phantom-menace/body/1/section/14/paragraph/1640",
+        "bibliography": {
+          "title": "Звёздные войны. Эпизод I: Скрытая угроза",
+          "author": "Терри Брукс"
+        }
+      },
+      "statement": "Anakin Skywalker's discovery and entry into the Jedi path begin the source chain Perun remembers.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Это будущее событие источника, а не материальное утверждение целевой эпохи."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-i",
+        "anakin"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "Perun's intervention can alter premises before the event; the outcome is not inevitable."
+      ]
+    },
+    {
+      "id": "b1-future-clone-war",
+      "record_kind": "source-event",
+      "research_question": "Which source escalation precedes the fall of the Republic?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод II: Атака клонов",
+      "branch": "both",
+      "source_era": "Episode II source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 2  Атака клонов.fb2",
+        "sha256": "e3d54ba78b098226c84a62517b44e4774cbfeb3c7ad2f08e43c6d5be95de6d49",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-ii-attack-of-the-clones/body/1/section/23/paragraph/3157",
+        "bibliography": {
+          "title": "Эпизод II: Атака клонов",
+          "author": "Роберт Сальваторе"
+        }
+      },
+      "statement": "The Republic's clone army and the outbreak of the Clone Wars create the military emergency used in the later political collapse.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-ii",
+        "clone-wars"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "Preparation must target enabling conditions, not assume the source war survives unchanged."
+      ]
+    },
+    {
+      "id": "b1-future-order-sixty-six",
+      "record_kind": "source-event",
+      "research_question": "Which source event destroys the Jedi as an institution?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод III: Месть ситхов",
+      "branch": "both",
+      "source_era": "Episode III source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 3  Месть ситхов.fb2",
+        "sha256": "429bfb855106916cd835abea4ffe3ec3d8d00c33087b6b312dde074d58936ed3",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iii-revenge-of-the-sith/body/1/section/4.2/paragraph/4095",
+        "bibliography": {
+          "title": "Эпизод III: Месть ситхов",
+          "author": "Мэтью Стовер"
+        }
+      },
+      "statement": "Order Sixty-Six turns the clone forces against the Jedi and destroys the Order's ordinary ability to respond as a public institution.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-iii",
+        "order-sixty-six"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "Perun's preparation can change the command system, the war, or Jedi vulnerability before this point."
+      ]
+    },
+    {
+      "id": "b1-future-empire",
+      "record_kind": "source-event",
+      "research_question": "Which political outcome follows the source crisis?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод III: Месть ситхов",
+      "branch": "both",
+      "source_era": "Episode III source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 3  Месть ситхов.fb2",
+        "sha256": "429bfb855106916cd835abea4ffe3ec3d8d00c33087b6b312dde074d58936ed3",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iii-revenge-of-the-sith/body/1/section/4.3/paragraph/4526",
+        "bibliography": {
+          "title": "Эпизод III: Месть ситхов",
+          "author": "Мэтью Стовер"
+        }
+      },
+      "statement": "Palpatine replaces the Republic with the Galactic Empire after consolidating emergency power and destroying effective opposition.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-iii",
+        "empire"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "The source outcome is a forecast only while its premises remain intact."
+      ]
+    },
+    {
+      "id": "b1-future-death-star",
+      "record_kind": "source-event",
+      "research_question": "Which source weapon and rebellion escalation define Episode IV?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод IV: Новая Надежда",
+      "branch": "both",
+      "source_era": "Episode IV source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 4  Новая Надежда.fb2",
+        "sha256": "b4703645425a96606f391250c697736324fa383747ffae5b373c082b56f06bb7",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-iv-a-new-hope/body/1/section/2/paragraph/2314",
+        "bibliography": {
+          "title": "Эпизод IV: Новая Надежда",
+          "author": "Алан Дин Фостер; Джордж Лукас"
+        }
+      },
+      "statement": "The Empire deploys the Death Star and the Rebel Alliance destroys the first battle station after obtaining its plans.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-iv",
+        "death-star",
+        "rebellion"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "Design, construction, and political premises may diverge long before the source battle."
+      ]
+    },
+    {
+      "id": "b1-future-vader-luke",
+      "record_kind": "source-event",
+      "research_question": "Which personal source-line premise constrains Perun's preparation around Vader and Luke?",
+      "source_type": "local-primary-work",
+      "source_title": "Эпизод V: Империя наносит ответный удар",
+      "branch": "both",
+      "source_era": "Episode V source-event era",
+      "locator": {
+        "kind": "local",
+        "local_path": "notes/Звездные войны/Эпизод 5  Империя наносит ответный удар.fb2",
+        "sha256": "4540905a515ff01dfe1816095d09b5a6703ffa1e3ec4dd69c8478a14313e913d",
+        "inventory_date": "2026-08-27",
+        "section": "fb2://sw-episode-v-the-empire-strikes-back/body/1/section/1/paragraph/1879",
+        "bibliography": {
+          "title": "Эпизод V: Империя наносит ответный удар",
+          "author": "Дональд Глут"
+        }
+      },
+      "statement": "Darth Vader is Anakin Skywalker and Luke's father; the later victory depends on relationships and choices, not only superior force.",
+      "confidence": "high",
+      "disposition": "accepted",
+      "era_dependency": "not-applicable",
+      "target_time_window": {
+        "status": "not-applicable",
+        "reason": "Future source event."
+      },
+      "comparison_category": "not-applicable",
+      "comparison_status": "unknown",
+      "target_era_evidence": [],
+      "relevance_tags": [
+        "future-source-event",
+        "episode-v",
+        "vader",
+        "luke"
+      ],
+      "narrative_uses": [],
+      "conflicts": [
+        "Changing Anakin's life can invalidate the identity, relationship, and final sequence; Perun must track premises rather than force the outcome."
+      ]
+    },
+    {
+      "record_kind": "external-claim",
+      "source_type": "web-official",
+      "confidence": "high",
+      "disposition": "adapted",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "material-life-design",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "conflicts": [],
+      "id": "b1-web-sith-fighter-appearance",
+      "research_question": "Какие проверенные внешние признаки допустимы для узнавания без переноса новых возможностей или событий?",
+      "source_title": "Kit Reveal: Sith Fighter — Capital Games",
+      "branch": "Legends",
+      "source_era": "Изображение Sith Fighter с обозначением Old Republic; визуальная модель из KotOR.",
+      "locator": {
+        "kind": "web",
+        "url": "https://forums.ea.com/discussions/swgoh-strategy-and-tips-en/kit-reveal-sith-fighter/4117219",
+        "accessed_at": "2026-09-05"
+      },
+      "statement": "На официальном изображении видны небольшая центральная кабина с выступающим носом и вынесенные в стороны на тонких опорах угловатые крылья-панели.",
+      "adaptation_note": "Переносится только узнаваемый облик древней ситхской машины. Иллюстрация просмотрена в браузере; игровые способности, характеристики, точная модель найденного экземпляра и современное производство не утверждаются.",
+      "relevance_tags": [
+        "book-1",
+        "appearance",
+        "atmosphere"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "identifying",
+          "goal": "Узнаваемость мира через наблюдаемые детали",
+          "scope": "Найденный древний истребитель; узнавание и ремонт",
+          "pov": "Внешний облик доступен наблюдателю; сведения интерлюдий не передаются Перуну.",
+          "use_statement": "На официальном изображении видны небольшая центральная кабина с выступающим носом и вынесенные в стороны на тонких опорах угловатые крылья-панели."
+        }
+      ]
+    },
+    {
+      "record_kind": "external-claim",
+      "source_type": "web-official",
+      "confidence": "high",
+      "disposition": "adapted",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "material-life-design",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "conflicts": [],
+      "id": "b1-web-twilek-appearance",
+      "research_question": "Какие проверенные внешние признаки допустимы для узнавания без переноса новых возможностей или событий?",
+      "source_title": "Twi’lek | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "Видовые признаки в экранных произведениях.",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/twi-lek",
+        "accessed_at": "2026-09-05"
+      },
+      "statement": "Тви’леки — гуманоиды с разнообразной окраской кожи и парой головных отростков, лекку.",
+      "adaptation_note": "Для совместимой с Legends органики используются только устойчивые внешние признаки; современная политика, культура и характер отдельного участника из вида не выводятся.",
+      "relevance_tags": [
+        "book-1",
+        "appearance",
+        "atmosphere"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "identifying",
+          "goal": "Узнаваемость мира через наблюдаемые детали",
+          "scope": "Органики в интерлюдиях мусорщиков",
+          "pov": "Внешний облик доступен наблюдателю; сведения интерлюдий не передаются Перуну.",
+          "use_statement": "Тви’леки — гуманоиды с разнообразной окраской кожи и парой головных отростков, лекку."
+        }
+      ]
+    },
+    {
+      "record_kind": "external-claim",
+      "source_type": "web-official",
+      "confidence": "high",
+      "disposition": "adapted",
+      "era_dependency": "era-dependent",
+      "target_time_window": {
+        "start_years_before_birth": 70,
+        "end_years_before_birth": 70
+      },
+      "comparison_category": "material-life-design",
+      "comparison_status": "transitional",
+      "target_era_evidence": [],
+      "conflicts": [],
+      "id": "b1-web-rodian-appearance",
+      "research_question": "Какие проверенные внешние признаки допустимы для узнавания без переноса новых возможностей или событий?",
+      "source_title": "Rodian | Star Wars Databank",
+      "branch": "Canon",
+      "source_era": "Видовые признаки в экранных произведениях.",
+      "locator": {
+        "kind": "web",
+        "url": "https://www.starwars.com/databank/rodian",
+        "accessed_at": "2026-09-05"
+      },
+      "statement": "Родиан отличают зелёная чешуйчатая кожа, усики, крупные круглые глаза без видимых зрачков и вытянутая морда.",
+      "adaptation_note": "Для совместимой с Legends органики используются только устойчивые внешние признаки; профессия, темперамент и решения отдельного участника не определяются видом.",
+      "relevance_tags": [
+        "book-1",
+        "appearance",
+        "atmosphere"
+      ],
+      "narrative_uses": [
+        {
+          "function": "material-anchor",
+          "anchor_kind": "identifying",
+          "goal": "Узнаваемость мира через наблюдаемые детали",
+          "scope": "Органики в интерлюдиях мусорщиков",
+          "pov": "Внешний облик доступен наблюдателю; сведения интерлюдий не передаются Перуну.",
+          "use_statement": "Родиан отличают зелёная чешуйчатая кожа, усики, крупные круглые глаза без видимых зрачков и вытянутая морда."
+        }
+      ]
+    }
+  ]
+}

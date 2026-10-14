@@ -38,7 +38,9 @@ try {
     }
     New-Item -ItemType Directory -Path (Join-Path $writerApp '.desktop'),(Join-Path $writerApp 'books') -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $writerRoot '.desktop/node.exe') -Destination (Join-Path $writerApp '.desktop/node.exe') -Force
-    Copy-Item -LiteralPath $writerBook -Destination (Join-Path $writerApp 'books/iron-mind') -Recurse -Force
+    Copy-Item -LiteralPath $writerBook -Destination (Join-Path $writerApp 'books') -Recurse -Force
+    node --input-type=module -e "import fs from 'node:fs';import {createHash} from 'node:crypto';const hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');if(hash(process.argv[1])!==hash(process.argv[2]))throw Error('Packaged book differs from current author publication');console.log('PASS packaged book exactly matches author publication');" (Join-Path $writerBook 'data/writer.sqlite') (Join-Path $writerApp 'books/iron-mind/data/writer.sqlite')
+    Require-Success
     node tests/starter-book-ui.js $writerApp
     Require-Success
     $writerZip = Join-Path $writerOutput 'WriterHelper-Windows-x64.zip'

@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
+import {Store,createProject,createBook,createChapter,children} from '../server/store.js';import {publishBook} from '../scripts/publish-book.js';import {initializeStarterBook} from '../server/starter-book.js';
+test('Bundled author book initializes a fresh installation exactly and never replaces an existing edited database',t=>{
+ fs.mkdirSync('test-data',{recursive:true});const root=fs.mkdtempSync(path.resolve('test-data/starter-book-')),source=path.join(root,'author'),bundle=path.join(root,'book'),destination=path.join(root,'reader');
+ const author=new Store(source);const project=createProject(author,'Iron Mind'),book=createBook(author,project.id,'Book 1',1),chapter=createChapter(author,children(author,book.id,'plan')[0].id,1,'Chapter 1');const manuscript=children(author,chapter.id,'manuscript')[0];author.save({...manuscript,content:'Latest author prose'},manuscript.rev);publishBook(source,bundle);author.close();
+ assert.equal(initializeStarterBook(destination,bundle),true);const reader=new Store(destination);assert.equal(reader.get(manuscript.id).content,'Latest author prose');assert.equal(reader.db.prepare("SELECT value FROM meta WHERE key='starterSelection'").get().value,manuscript.id);const m=reader.get(manuscript.id);reader.save({...m,content:'Reader local edit'},m.rev);const before=reader.all();reader.close();
+ assert.equal(initializeStarterBook(destination,bundle),false);const again=new Store(destination);assert.deepEqual(again.all(),before);again.close();
+ const empty=path.join(root,'existing-empty');const existing=new Store(empty);existing.close();assert.equal(initializeStarterBook(empty,bundle),false);const unchanged=new Store(empty);assert.equal(unchanged.all('project').length,0);unchanged.close();
+});

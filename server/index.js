@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Store, id, hash, fail, ancestry, children, createProject, createBook, createChapter } from './store.js';
 import { seedPrompts } from './prompts.js';
+import { initializeStarterBook } from './starter-book.js';
 import { effectiveScheme, prepareScheme, makePacket, validateGraph, validateResult, acceptCandidate } from './generation.js';
 import { Secrets, callProvider, listModels } from './provider.js';
 import { inspectJsonBundle, importJsonBundle } from './json-importer.js';
@@ -31,7 +32,7 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         if (req.headers['x-writer-client'] !== '1' || !req.headers['content-type']?.startsWith('application/json')) fail('Требуется запрос приложения JSON', 403);
         const chunks = []; let bytes = 0; for await (const chunk of req) { chunks.push(chunk); bytes += chunk.length; if (bytes > 15 * 1024 * 1024) fail('Запрос слишком большой', 413); } const raw = Buffer.concat(chunks).toString('utf8'); body = raw ? JSON.parse(raw) : {};
       }
-      if (route === '/api/state' && req.method === 'GET') return reply(res, 200, { entities: store.all().map(x => x.type === 'connection' ? { ...x, hasKey: secrets.has(x.id) } : x), dev });
+      if (route === '/api/state' && req.method === 'GET') return reply(res, 200, { entities: store.all().map(x => x.type === 'connection' ? { ...x, hasKey: secrets.has(x.id) } : x), dev, initialSelection:store.db.prepare("SELECT value FROM meta WHERE key='starterSelection'").get()?.value||'' });
       if (route === '/api/import/json/format' && req.method === 'GET') { res.writeHead(200,{'Content-Type':'text/markdown; charset=utf-8','X-Content-Type-Options':'nosniff'});return res.end(fs.readFileSync(path.join(root,'docs','json-import-format.md'))); }
       if (route === '/api/entity' && req.method === 'POST') {
         const { entity, expected } = body;
@@ -131,7 +132,9 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const dev = process.argv.includes('--dev'); let middleware;
   if (dev) { const vite = await import('vite'); middleware = (await vite.createServer({ root, server: { middlewareMode: true }, appType: 'spa' })).middlewares; }
-  const store = new Store(process.env.WRITER_DATA || path.join(root, 'data'));
+  const directory=process.env.WRITER_DATA || path.join(root,'data');
+  initializeStarterBook(directory,path.join(root,'books','iron-mind'));
+  const store = new Store(directory);
   for (const c of store.all('candidate').filter(c => c.status === 'running')) store.save({ ...c, status: 'error', error: 'Приложение перезапущено до завершения запроса' }, c.rev);
   const server = makeServer(store, { dev, middleware }); server.listen(Number(process.env.PORT || 4317), '127.0.0.1', () => console.log(`WriterHelper: http://127.0.0.1:${server.address().port}`));
 }

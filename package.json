@@ -1,6 +1,6 @@
 {
   "name": "writer-helper",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,7 +17,8 @@
     "import:json": "node scripts/import-json.js",
     "book:publish": "node scripts/publish-book.js",
     "test:preview-dirty": "node tests/preview-dirty-ui.js",
-    "test:drafts-audit": "node tests/all-section-drafts-ui.js"
+    "test:drafts-audit": "node tests/all-section-drafts-ui.js",
+    "release:windows": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build-release.ps1"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.14.1",

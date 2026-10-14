@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readPreferences } from '../src/state/workspace.ts';
-import { differs, recoverableDraft } from '../src/state/drafts.ts';
+import { differs, recoverableDraft, clean } from '../src/state/drafts.ts';
 
 test('Recovery requires actual unsaved changes and ignores newline or object key formatting',()=>{
  const base={id:'text',type:'manuscript',rev:1,title:'Рукопись',content:'Строка\r\nАбзац',fields:{a:1,b:2}};
@@ -19,4 +19,18 @@ test('Studio preferences restore legacy selection and safely bound corrupted set
  values.set('writer-studio-ui-v1',JSON.stringify({selected:'new-material',left:9999,right:-4,theme:'invalid',font:'broken',cursors:{a:'bad',b:[4,7]},scrolls:[],opened:[]}));
  const p=readPreferences();assert.equal(p.selected,'new-material');assert.equal(p.left,360);assert.equal(p.right,280);assert.equal(p.theme,'system');assert.equal(p.font,'Georgia');assert.deepEqual(p.cursors,{b:[4,7]});assert.deepEqual(p.opened,{});
  global.localStorage={getItem(){throw Error('Storage denied');}};assert.equal(readPreferences().selected,'');delete global.localStorage;
+});
+
+test('Empty optional form values compare to the original; unknown author fields remain significant',()=>{
+ const style={id:'s',type:'style',rev:1,title:'Style',content:'',fields:{}};
+ assert.equal(differs(style,{...style,fields:{pov:'',limits:null}}),false);
+ assert.equal(differs(style,{...style,fields:{pov:'Third person'}}),true);
+ assert.equal(differs(style,{...style,fields:{unknown:''}}),true);
+ const prompt={id:'p',type:'service-form',rev:1,title:'Prompt',content:'',fields:{value:{type:'prompt',title:'P',order:10}}};
+ assert.equal(differs(prompt,{...prompt,fields:{value:{...prompt.fields.value,conditions:{from:undefined}}}}),false);
+ assert.equal(differs(prompt,{...prompt,fields:{value:{...prompt.fields.value,order:99}}}),true);
+});
+test('Connection keys are not serialized into a service draft; other form values survive',()=>{
+ const form={id:'c',type:'service-form',rev:1,title:'Connection',content:'',fields:{value:{title:'C',model:'author-model',key:'private-test-password'}}};
+ const sanitized=clean(form);assert.equal(sanitized.fields.value.key,'');assert.equal(sanitized.fields.value.model,'author-model');assert.equal(form.fields.value.key,'private-test-password');
 });

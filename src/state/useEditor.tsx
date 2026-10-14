@@ -7,12 +7,12 @@ export function useEditor(node:Entity|undefined,commit:(draft:Entity)=>Promise<E
  const [draft,setDraft]=useState<Entity|null>(null),[status,setStatus]=useState('Сохранено'),[error,setError]=useState(''),[recovery,setRecovery]=useState<DraftRecord|null>(null),[transition,setTransition]=useState<(()=>void)|null>(null),[saving,setSaving]=useState(false);
  const [recoveryOpen,setRecoveryOpen]=useState(false);
  const base=useRef<Entity|null>(null),latest=useRef<Entity|null>(null),generation=useRef(0);latest.current=draft;
- const discarding=useRef(false);
+ const discarding=useRef(false),ownedDrafts=useRef(new Set<string>()),writes=useRef(new Map<string,Promise<any>>());
  const extraRef=useRef(extra);extraRef.current=extra;
  const dirty=differs(draft,base.current)||!!extra.dirty;
- useEffect(()=>{const serial=++generation.current;base.current=node?structuredClone(node):null;setDraft(node?structuredClone(node):null);setRecovery(null);setRecoveryOpen(false);setStatus('Сохранено');if(node&&!['connection','packet'].includes(node.type))draftStorage('get',node.id).then(r=>{if(serial===generation.current&&r&&recoverableDraft(r,node)){setRecovery(r);}}).catch(()=>setError('Локальное восстановление недоступно. Сохраните материал в приложении.'));},[node?.id]);
- const persist=async()=>{if(discarding.current)return;if(extraRef.current.dirty)await extraRef.current.flush?.();const d=latest.current,b=base.current;if(discarding.current||!d||!b||!differs(d,b)||d.type==='connection')return;try{await draftStorage('put',d.id,{id:d.id,base:clean(b),draft:clean(d),at:new Date().toISOString()});setStatus('Черновик сохранён локально');}catch{setError('Не удалось сохранить локальный черновик. Сохраните материал в приложении.');throw new Error('Локальное восстановление недоступно');}};
- useEffect(()=>{if(dirty){setStatus('Есть несохранённые изменения');const timer=setTimeout(()=>{void persist().catch(()=>{});},250);return()=>clearTimeout(timer);}else if(draft)setStatus('Сохранено');},[draft,extra.dirty]);
+ useEffect(()=>{const serial=++generation.current;if(node)ownedDrafts.current.delete(node.id);base.current=node?structuredClone(node):null;setDraft(node?structuredClone(node):null);setRecovery(null);setRecoveryOpen(false);setStatus('Сохранено');setError('');if(node&&!['connection','packet'].includes(node.type))draftStorage('get',node.id).then(r=>{if(serial===generation.current&&r&&recoverableDraft(r,node)){setRecovery(r);}}).catch(()=>setError('Локальное восстановление недоступно. Сохраните материал в приложении.'));},[node?.id]);
+ const persist=async()=>{if(discarding.current)return;if(extraRef.current.dirty)await extraRef.current.flush?.();const d=latest.current,b=base.current;if(discarding.current||!d||!b||!differs(d,b)||d.type==='connection')return;try{ownedDrafts.current.add(d.id);const pending=draftStorage('put',d.id,{id:d.id,base:clean(b),draft:clean(d),at:new Date().toISOString()});writes.current.set(d.id,pending);await pending;setStatus('Черновик сохранён локально');}catch{setError('Не удалось сохранить локальный черновик. Сохраните материал в приложении.');throw new Error('Локальное восстановление недоступно');}};
+ useEffect(()=>{if(dirty){setStatus('Есть несохранённые изменения');const timer=setTimeout(()=>{void persist().catch(()=>{});},250);return()=>clearTimeout(timer);}else if(draft){setStatus('Сохранено');const id=draft.id;if(id===node?.id&&id===base.current?.id&&ownedDrafts.current.has(id)){void (async()=>{await writes.current.get(id);if(latest.current?.id===id&&!differs(latest.current,base.current)){await draftStorage('delete',id);ownedDrafts.current.delete(id);}})().catch(()=>setError('Не удалось удалить отменённый черновик'));}}},[draft,extra.dirty]);
  useEffect(()=>{const flush=(e:Event)=>{const detail=(e as CustomEvent).detail;if(detail&&Array.isArray(detail.promises))detail.promises.push(persist());};window.addEventListener('writerhelper-desktop-flush',flush);return()=>window.removeEventListener('writerhelper-desktop-flush',flush);},[]);
  const save=async(value:Entity|null=latest.current)=>{
   if(!value)return;setSaving(true);setError('');
@@ -35,7 +35,7 @@ export function useEditor(node:Entity|undefined,commit:(draft:Entity)=>Promise<E
  };
  const discard=async()=>{
   const b=base.current;if(!b)return;discarding.current=true;setSaving(true);setError('');
-  try{await extraRef.current.flush?.();await deleteDrafts(b.id);await extraRef.current.discard?.();latest.current=structuredClone(b);setDraft(latest.current);setRecovery(null);setRecoveryOpen(false);setStatus('Сохранено');}
+  try{await extraRef.current.flush?.();await writes.current.get(b.id);await deleteDrafts(b.id);ownedDrafts.current.delete(b.id);await extraRef.current.discard?.();latest.current=structuredClone(b);setDraft(latest.current);setRecovery(null);setRecoveryOpen(false);setStatus('Сохранено');}
   catch(e:any){setError('Не удалось отменить локальные правки: '+e.message);throw e;}
   finally{discarding.current=false;setSaving(false);}
  };

@@ -1,6 +1,6 @@
 {
   "name": "writer-helper",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "type": "module",
   "engines": {
@@ -25,7 +25,8 @@
     "test:connection-models": "node tests/connection-models-ui.js",
     "test:primary-model": "node tests/primary-model-ui.js",
     "test:openai": "node --test tests/openai.test.js",
-    "test:openai-ui": "node tests/openai-ui.js"
+    "test:openai-ui": "node tests/openai-ui.js",
+    "test:hierarchy-ui": "node tests/hierarchy-task-ui.js"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.14.1",

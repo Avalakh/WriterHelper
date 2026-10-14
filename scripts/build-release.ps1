@@ -37,6 +37,8 @@ try {
     Require-Success
     node tests/generation-target-ui.js
     Require-Success
+    node tests/hierarchy-task-ui.js
+    Require-Success
     node tests/connection-models-ui.js
     Require-Success
     node tests/primary-model-ui.js
@@ -71,30 +73,28 @@ try {
     Set-Content -LiteralPath $writerChecksums -Value "$writerHash  WriterHelper-Windows-x64.zip" -Encoding ascii
     $writerNotes = Join-Path $writerOutput 'release-notes.md'
     @"
-WriterHelper $writerVersion поставляется вместе с актуальными рабочими материалами «Железного разума». Программа и книга подготовлены одним выпуском из последнего сохранённого авторского проекта.
+WriterHelper ${writerVersion}: ИИ по структуре проекта и экономное управление контекстом.
 
-Модели генерации и проверки выбираются из выпадающих списков, автоматически загруженных из сохранённого подключения. Поддерживается OpenAI через Codex CLI и вход по коду устройства, без API-ключа. Списки можно обновить; при необходимости доступен ручной ввод.
+Цель задачи ИИ по умолчанию — текущая страница. Её можно сменить на проект, книгу, раздел или отдельный материал. Операции: Поиск, Дополнить, Доработать, Проверить, Предложить, Создать.
 
-Поле «Основная модель» находится в настройках подключения перед моделями генерации и проверки. После сохранения основное подключение и модель подставляются в новые запросы: генерацию материалов, работу с фрагментами и вопросы по тексту. В каждой операции можно выбрать другую модель; разовая замена не меняет общий выбор. Выбор сохраняется после перезапуска.
+Модель выбирает основания по компактной карте структуры. Поиск и проверка используют полный краткий список целей; большие области обрабатываются по частям. Доработка переиспользует адресованные выдержки. Добавлены короткие ID, кэш неизменившихся запросов и учёт числа вызовов с оценкой входящих и исходящих токенов. Во время работы обновляется только лёгкий статус задачи.
 
-Ctrl+S сохраняет активный материал, оформление, правку кандидата, подключение ИИ, промпт или схему тем же действием, что кнопка сохранения. Поддерживается русская раскладка. Открытый диалог не сохраняет скрытый за ним редактор.
+Результат предлагается автору как Было / Будет с местами назначения, новыми ветками и выборочным принятием. Можно скачать JSON. Закрытие окна не отменяет запрос; остановка — отдельное действие. Ошибочный JSON или цитата получают одну ограниченную попытку исправления. Проверенные результаты сохраняются, неподтверждённые выводы показываются отдельно.
 
-Рукописи запоминают место чтения и курсор. Цель генерации всегда совпадает с выбранным пунктом структуры; результаты показываются только для этого материала, с указанием книги и главы. Архив включает библиотеки экспорта книги в TXT, FB2, EPUB, Markdown, HTML, DOCX и PDF.
+В архив включены актуальные материалы Железного разума и библиотеки экспорта книги. Подключения, ключи, профили входа и результаты ИИ не входят в поставку. Существующая папка data при обновлении сохраняется; встроенная книга применяется только при новой установке.
 
-Скачайте WriterHelper-Windows-x64.zip, распакуйте весь архив и запустите WriterHelper.exe. При первом запуске книга уже загружена и открывается первая написанная глава. Импорт и отдельный архив книги не нужны.
-
-При обновлении существующая папка data, локальные правки и другие проекты сохраняются: встроенная книга используется только для новой установки. Ключи и подключения ИИ в поставку не входят.
+Скачайте WriterHelper-Windows-x64.zip, распакуйте весь архив и запустите WriterHelper.exe. Перед обновлением завершите программу через Выход в трее.
 "@ | Set-Content -LiteralPath $writerNotes -Encoding utf8
     if ($Publish) {
         $writerGitPaths = @('src','server','desktop','docs','tests','scripts','books','examples','package.json','package-lock.json','README.md','.gitignore','.gitattributes','LICENSE') | Where-Object { Test-Path -LiteralPath (Join-Path $writerRoot $_) }
         git add -- $writerGitPaths
         Require-Success
         git diff --cached --quiet
-        if ($LASTEXITCODE -eq 1) { git commit -m "Release $writerVersion with current Iron Mind author project"; Require-Success }
+        if ($LASTEXITCODE -eq 1) { git commit -m "Release $writerVersion with hierarchy AI tasks and context optimizations"; Require-Success }
         elseif ($LASTEXITCODE -ne 0) { throw 'Не удалось проверить изменения Git' }
         git push origin main
         Require-Success
-        gh release create "v$writerVersion" $writerZip $writerChecksums --repo Avalakh/WriterHelper --target main --title "WriterHelper $writerVersion — программа и Железный разум" --notes-file $writerNotes
+        gh release create "v$writerVersion" $writerZip $writerChecksums --repo Avalakh/WriterHelper --target main --title "WriterHelper $writerVersion — ИИ по структуре и экономия контекста" --notes-file $writerNotes
         Require-Success
     }
     Write-Output $writerZip

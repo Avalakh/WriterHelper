@@ -2,6 +2,7 @@ import { modelConnection } from './model-choice.js';
 import { ancestry, children, fail, hash, id } from './store.js';
 import { buildFragmentContext } from './fragment-context.js';
 import { applicablePrompts } from './prompts.js';
+import { makeHierarchyPacket, parseHierarchy, acceptHierarchy } from './hierarchy-task.js';
 
 export const roles = ['constraint', 'events', 'style', 'participants', 'boundary', 'editing'];
 const edge = (source, role, required = false) => ({ id: `default-${source}`, source, to: 'generation', role, required, enabled: true });
@@ -65,6 +66,10 @@ function rangeForChapter(plot, number) {
 }
 export function makePacket(store, targetId, request) {
   const target = store.get(targetId); if (!target) fail('Цель не найдена');
+  if (request.scopeDown || ['search','check','suggest'].includes(request.operation) || ['project','book','plan','scenes','characters','canon'].includes(target.type)) {
+    const scheme=effectiveScheme(store,target);if(scheme.conflicts.length)fail(scheme.conflicts.join('\n'));
+    return makeHierarchyPacket(store,target,request,scheme.edges);
+  }
   if(request.expectedRev!==undefined&&request.expectedRev!==target.rev)fail('Рукопись изменилась. Выделите фрагмент или место вставки заново.',409);
   let range;
   if(request.range!==undefined){
@@ -151,8 +156,9 @@ export function makePacket(store, targetId, request) {
   if (errors.length) fail(errors.join('\n'));
   packet.fingerprint = hash(JSON.stringify(packet)); return packet;
 }
-export function validateResult(contract, text) {
+export function validateResult(contract, text, packet) {
   if (typeof text !== 'string' || !text.trim()) fail('Пустой ответ ИИ');
+  if (contract === 'json-hierarchy') return parseHierarchy(text,packet);
   if (contract === 'text') return text;
   let data; try { data = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch { fail('Ответ не соответствует JSON-контракту'); }
   const scene = s => Number.isInteger(s.номер) && typeof s.атмосфера === 'string' && typeof s.сюжет === 'string' && Array.isArray(s.персонажи) && s.персонажи.every(x => typeof x === 'string') && Array.isArray(s.дополнительные_детали) && s.дополнительные_детали.every(x => typeof x === 'string');
@@ -161,7 +167,9 @@ export function validateResult(contract, text) {
   if (contract === 'json-preview' && !(typeof data.font === 'string' && data.font.length < 100 && Number.isFinite(data.size) && data.size >= 10 && data.size <= 40 && Number.isFinite(data.width) && data.width >= 300 && data.width <= 4000 && Number.isFinite(data.height) && data.height >= 400 && data.height <= 6000 && Number.isFinite(data.margin) && data.margin >= 10 && data.margin < Math.min(data.width, data.height) / 3 && Number.isFinite(data.heading) && data.heading >= 12 && data.heading <= 60)) fail('Неверные настройки оформления');
   return data;
 }
-export function acceptCandidate(store, candidateId, expected) {
+export function acceptCandidate(store, candidateId, expected, changes) {
+  const candidate=store.get(candidateId);
+  if(candidate?.packet?.contract==='json-hierarchy') return acceptHierarchy(store,candidate,expected,changes);
   return store.transaction(() => {
     const c = store.get(candidateId); if (!c || c.status !== 'ready' || !c.valid) fail('Кандидат не готов к принятию');
     const target = store.get(c.packet.target.id); if (target.rev !== c.packet.target.rev || expected !== target.rev) fail('Исходник изменился. Выполните новое сравнение и повторную генерацию.', 409);

@@ -37,6 +37,14 @@ export class Store {
     this.db.prepare('INSERT OR REPLACE INTO entities VALUES(?,?,?)').run(key, next.type, JSON.stringify(next));
     return next;
   }
+  saveCandidateProgress(key, progress, contextPlan) {
+    const old=this.get(key);
+    if(!old||old.type!=='candidate'||old.status!=='running')fail('Задача больше не выполняется',409);
+    // Progress is transient: do not copy a whole book snapshot into history for every chunk.
+    const next={...old,progress,contextPlan,rev:old.rev+1,updated:new Date().toISOString()};
+    this.db.prepare('UPDATE entities SET json=? WHERE id=?').run(JSON.stringify(next),key);
+    return next;
+  }
   remove(key, rev) { const old = this.get(key); if (!old || old.rev !== rev) fail('Конфликт удаления', 409); if (this.all().some(e => e.parent === key)) fail('Сначала удалите дочерние материалы'); this.db.prepare('INSERT OR IGNORE INTO history VALUES(?,?,?)').run(key, old.rev, JSON.stringify(old)); this.db.prepare('DELETE FROM entities WHERE id=?').run(key); }
   versions(key) { return this.db.prepare('SELECT json FROM history WHERE id=? ORDER BY rev DESC').all(key).map(x => JSON.parse(x.json)); }
   restore(key, rev, expected) { const old = this.versions(key).find(x => x.rev === rev); if (!old) fail('Версия не найдена'); return this.save(old, expected); }

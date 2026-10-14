@@ -27,7 +27,8 @@ try{
  await page.goto(`http://127.0.0.1:${server.address().port}`);
  await expect(page.getByLabel('Текст главы')).toHaveValue(manuscripts[1].content);
  await expect(page.locator('.target-summary')).toContainText('Глава 11.');await expect(page.locator('.target-summary')).toContainText('Рукопись');
- await expect(page.getByLabel('Цель генерации')).toHaveCount(0);
+ await expect(page.getByLabel('Цель генерации')).toHaveValue('');
+ await page.getByRole('checkbox',{name:'Включая все вложенные материалы'}).uncheck();
  await expect(page.locator('.results button')).toHaveCount(1);await expect(page.locator('.results')).not.toContainText('Сцена 1');
  await page.locator('.results button').click();await expect(page.getByLabel('Предложенный результат')).toHaveValue(own.content);
  await expect(page.getByRole('button',{name:'Сгенерировать',exact:true})).toBeDisabled();
@@ -46,9 +47,9 @@ try{
  await page.getByRole('button',{name:'Сгенерировать',exact:true}).click();await waiting;
  await search('Сцена 1','Сцена 1');release();await expect(page.getByRole('alert')).toContainText('Выбранный материал изменился');
  assert.equal(packets.length,1);await page.unroute('**/api/packet');await expect(page.locator('.target-summary')).toContainText('Глава 1.');
- await page.getByRole('combobox',{name:'Активная книга'}).selectOption(second.id);await expect(page.getByRole('button',{name:'Сгенерировать',exact:true})).toHaveCount(0);await expect(page.locator('.results button')).toHaveCount(0);
+ await page.getByRole('combobox',{name:'Активная книга'}).selectOption(second.id);await expect(page.getByLabel('Цель генерации')).toHaveValue('');await expect(page.getByRole('button',{name:'Сгенерировать',exact:true})).toHaveCount(1);await expect(page.locator('.results button')).toHaveCount(0);
  await search('Описание мира','Описание мира',1);await expect(page.locator('.target-summary')).toContainText('Книга 2. Вторая книга / Описание мира');await expect(page.getByText('Полный запрос',{exact:true})).toHaveCount(0);
  await page.getByLabel('Что создать или изменить').fill('Опиши мир второй книги');await page.getByRole('button',{name:'Сгенерировать',exact:true}).click();await page.getByRole('heading',{name:'Кандидат · Готов к проверке'}).waitFor();
  assert.equal(packets.at(-1).target.id,world.id);assert.equal(store.get(manuscripts[0].id).content,manuscripts[0].content);assert.deepEqual(errors,[]);
- console.log('PASS: selected manuscript/scene/book targets, full location labels, scoped results, candidate return, real context and mock generation target, unsupported folders blocked');
+ console.log('PASS: default selected targets, editable target, full location labels, scoped results, candidate return, legacy material generation, navigation race and folder availability');
 }finally{await browser.close();await new Promise(r=>server.close(r));store.close();}

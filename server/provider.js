@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { hierarchyMessages } from './hierarchy-task.js';
 import { fragmentMessages } from './fragment-context.js';
 import { insertionCheckMessages } from './insertion.js';
 import path from 'node:path';
@@ -20,6 +21,7 @@ export class Secrets {
   has(id) { return !!this.data()[id]; }
 }
 export function messages(packet, review = false) {
+  if(packet.contract==='json-hierarchy'&&!review) return hierarchyMessages(packet);
   if(packet.operation==='insert-check')return insertionCheckMessages(packet);
   if(packet.context&&!review)return fragmentMessages(packet);
   const selected = packet.prompts.filter(p => p.stage === (review ? 'review' : 'generation'));

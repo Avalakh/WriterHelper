@@ -2,6 +2,8 @@ import { modelConnection } from './model-choice.js';
 import http from 'node:http';
 import { generateInsertion } from './insertion.js';
 import { makeTextPacket } from './text-packet.js';
+import { assertHierarchySnapshot } from './hierarchy-task.js';
+import { runHierarchy } from './hierarchy-run.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -134,24 +136,39 @@ export function makeServer(store, { dev = false, mockProvider, middleware, opena
         await (mockProvider || callProvider)({ ...connection, maxOutput: connection.maxOutput || 8192 }, packet, secrets); return reply(res, 200, { status: 'Готово' });
       }
       if (route === '/api/packet' && req.method === 'POST') { const packet = makePacket(store, body.target, body); store.save({ id: packet.id, type: 'packet', title: 'Пакет генерации', packet, content: '' }); return reply(res, 200, packet); }
+      if(route==='/api/candidate/status'&&req.method==='GET') {
+        const c=store.get(url.searchParams.get('id'));if(!c||c.type!=='candidate')fail('Результат не найден',404);
+        const plan=c.contextPlan;
+        return reply(res,200,{id:c.id,rev:c.rev,status:c.status,progress:c.progress,contextPlan:plan?{planningPages:plan.planningPages,workParts:plan.workParts,completedParts:plan.completedParts,reasons:plan.reasons,sourceIds:plan.sourceIds,inspectTargetIds:plan.inspectTargetIds,estimatedInputTokens:plan.estimatedInputTokens,estimatedOutputTokens:plan.estimatedOutputTokens,calls:plan.calls?.map(({stage,inputTokens,outputTokens,durationMs,status,cached})=>({stage,inputTokens,outputTokens,durationMs,status,cached}))}:undefined});
+      }
       if (route === '/api/generate' && req.method === 'POST') {
         const packet = store.get(body.packet)?.packet; if (!packet) fail('Подготовьте пакет');
+        if(packet.contract==='json-hierarchy')assertHierarchySnapshot(store,packet);
         const target = store.get(packet.target.id); if (target.rev !== packet.target.rev) fail('Материал изменился. Пересоберите пакет.', 409);
         for (const s of packet.sources) { const n = store.get(s.id); if (n && n.rev !== s.rev) fail(`Источник ${s.title} изменился. Пересоберите пакет.`, 409); }
         for (const p of packet.prompts) if (store.get(p.id)?.rev !== p.rev) fail('Промпт изменился. Пересоберите пакет.', 409);
         const candidate = store.save({ type: 'candidate', title: target.title, status: 'running', valid: false, packet, content: '', reviews: [], project: ancestry(store, target).find(x => x.type === 'project')?.id });
         const controller = new AbortController(); pending.set(candidate.id, controller);
         (async () => { try {
-          const connection=modelConnection(store.get(packet.connection),packet);const generated=packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const content=generated.text;
+          const connection=modelConnection(store.get(packet.connection),packet);
+          const progress=async(progress,contextPlan)=>{controller.signal.throwIfAborted();assertHierarchySnapshot(store,packet);store.saveCandidateProgress(candidate.id,progress,contextPlan);};
+          const generated=packet.contract==='json-hierarchy'?await runHierarchy(connection,packet,secrets,controller.signal,mockProvider||callProvider,progress):packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const content=generated.text;
           const current = store.get(candidate.id); if (controller.signal.aborted || current.status === 'cancelled') return;
-          let valid = true, formatError = ''; try { validateResult(packet.contract, content); } catch (e) { valid = false; formatError = e.message; }
-          store.save({ ...current, status: 'ready', content, valid, formatError, insertionChecks:generated.checks }, current.rev);
+          let valid = true, formatError = ''; try { validateResult(packet.contract, content, packet); } catch (e) { valid = false; formatError = e.message; }
+          store.save({ ...current, status: 'ready', content, valid, formatError, insertionChecks:generated.checks, ...(generated.contextPlan?{contextPlan:generated.contextPlan}:{}) }, current.rev);
         } catch (e) { const c = store.get(candidate.id); if (c.status !== 'cancelled') store.save({ ...c, status: controller.signal.aborted ? 'cancelled' : 'error', error: e.message.includes('HTTP') || e.status ? e.message : 'Запрос не завершён. Проверьте сервер, протокол и тайм-аут.' }, c.rev); } finally { pending.delete(candidate.id); } })();
         return reply(res, 200, candidate);
       }
-      if (route === '/api/candidate/cancel' && req.method === 'POST') { pending.get(body.id)?.abort(); const c = store.get(body.id); return reply(res, 200, store.save({ ...c, status: 'cancelled' }, c.rev)); }
-      if (route === '/api/candidate/edit' && req.method === 'POST') { const c = store.get(body.id); let valid = true, formatError = ''; try { validateResult(c.packet.contract, body.content); } catch (e) { valid = false; formatError = e.message; } return reply(res, 200, store.save({ ...c, content: body.content, valid, formatError, reviews: [] }, c.rev)); }
-      if (route === '/api/candidate/accept' && req.method === 'POST') return reply(res, 200, acceptCandidate(store, body.id, body.expected));
+      if (route === '/api/candidate/cancel' && req.method === 'POST') {
+        const c=store.get(body.id);if(!c)fail('Результат не найден',404);
+        if(c.status==='accepted')fail('Принятый результат нельзя отменить',409);
+        if(c.status==='cancelled')return reply(res,200,c);
+        const kind=c.status==='running'?'stopped':'rejected';
+        pending.get(body.id)?.abort();
+        return reply(res,200,store.save({...c,status:'cancelled',termination:{kind,previousStatus:c.status,at:new Date().toISOString()}},c.rev));
+      }
+      if (route === '/api/candidate/edit' && req.method === 'POST') { const c = store.get(body.id); let valid = true, formatError = ''; try { validateResult(c.packet.contract, body.content, c.packet); } catch (e) { valid = false; formatError = e.message; } return reply(res, 200, store.save({ ...c, content: body.content, valid, formatError, reviews: [] }, c.rev)); }
+      if (route === '/api/candidate/accept' && req.method === 'POST') return reply(res, 200, acceptCandidate(store, body.id, body.expected, body.changes));
       if (route === '/api/candidate/review' && req.method === 'POST') {
         const c = store.get(body.id); if (!c || c.status !== 'ready' || !c.valid) fail('Нужен валидный кандидат');
         const connection = modelConnection(store.get(c.packet.connection),{...c.packet,reviewModel:body.model||c.packet.reviewModel}); const packet = { ...c.packet, candidate: c.content, prompts: c.packet.prompts.filter(p => p.stage === 'review' && (!body.prompts || body.prompts.includes(p.id))) };

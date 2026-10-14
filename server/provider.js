@@ -4,9 +4,10 @@ import { insertionCheckMessages } from './insertion.js';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fail } from './store.js';
+import { OpenAIProvider } from './openai.js';
 
 export class Secrets {
-  constructor(directory) { this.file = path.join(directory, 'secrets.dpapi.json'); }
+  constructor(directory) { this.file = path.join(directory, 'secrets.dpapi.json'); this.openai = new OpenAIProvider(directory); }
   data() { return fs.existsSync(this.file) ? JSON.parse(fs.readFileSync(this.file, 'utf8')) : {}; }
   transform(text, decrypt = false) {
     if (process.platform !== 'win32') fail('Защищённое хранение ключа настроено для Windows DPAPI');
@@ -27,6 +28,7 @@ export function messages(packet, review = false) {
 }
 export async function callProvider(connection, packet, secrets, signal, review = false) {
   const timeout = AbortSignal.timeout(connection.timeout || 180000); const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
+  if (connection.kind === 'openai') return secrets.openai.generate(connection, messages(packet, review), combined, review);
   if (connection.kind === 'executor') {
     return new Promise((resolve, reject) => {
       let output = '', settled = false;
@@ -47,6 +49,7 @@ export async function callProvider(connection, packet, secrets, signal, review =
   const result = await response.json(); const choice = result.choices?.[0]; if (choice?.finish_reason === 'length') fail('Ответ обрезан лимитом. Увеличьте предел ответа.'); if (typeof choice?.message?.content !== 'string' || !choice.message.content.trim()) fail('Нет полного текстового ответа ИИ'); return choice.message.content;
 }
 export async function listModels(connection, secrets) {
+  if (connection?.kind === 'openai') return secrets.openai.models(connection);
   if (connection.kind !== 'api') return [];
   const key = secrets?.get(connection.id); const r = await fetch(`${connection.url.replace(/\/$/, '')}/models`, { signal: AbortSignal.timeout(10000), headers: key ? { Authorization: `Bearer ${key}` } : {} }); if (!r.ok) fail(`Список моделей: HTTP ${r.status}`); return (await r.json()).data?.map(m => m.id) || [];
 }

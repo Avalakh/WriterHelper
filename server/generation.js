@@ -1,3 +1,4 @@
+import { modelConnection } from './model-choice.js';
 import { ancestry, children, fail, hash, id } from './store.js';
 import { buildFragmentContext } from './fragment-context.js';
 import { applicablePrompts } from './prompts.js';
@@ -74,7 +75,7 @@ export function makePacket(store, targetId, request) {
   }
   if(request.operation==='insert'&&!range)fail('Укажите место вставки в рукописи');
   if (['project', 'book', 'plan', 'scenes', 'characters', 'canon'].includes(target.type)) fail('Выберите конкретный материал для генерации');
-  const connection = store.get(request.connection); if (!connection || connection.type !== 'connection') fail('Выберите подключение ИИ');
+  const connection = modelConnection(store.get(request.connection),request); if (!connection || connection.type !== 'connection') fail('Выберите подключение ИИ');
   const ancestors = ancestry(store, target), book = ancestors.find(x => x.type === 'book'), project = ancestors.find(x => x.type === 'project'), chapter = ancestors.find(x => x.type === 'chapter');
   const bookDocs = book ? children(store, book.id) : [];
   const { edges, conflicts } = effectiveScheme(store, target); if (conflicts.length) fail(conflicts.join('\n'));
@@ -141,7 +142,7 @@ export function makePacket(store, targetId, request) {
   if (request.operation && request.operation !== 'create' && target.type !== 'preview' && !sources.some(s => s.id === target.id && s.role === 'editing')) sources.push(sourceValue(target, target.content, 'editing'));
   prompts.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
   if (request.selection && (!target.content.includes(request.selection) || request.operation !== 'revise')) errors.push('Выделенный диапазон изменился или операция не является переработкой');
-  const packet = { id: id(), target: { id: target.id, rev: target.rev, type: target.type, title: target.title, number: target.number }, operation: request.operation || 'create', selection: request.selection || '', task: request.task || target.task || '', variables, model: connection.model, connection: connection.id, sources, prompts, contract: target.type === 'chapter' ? 'json-chapter' : target.type === 'scene' ? 'json-scene' : target.type === 'preview' ? 'json-preview' : 'text', created: new Date().toISOString() };
+  const packet = { id: id(), target: { id: target.id, rev: target.rev, type: target.type, title: target.title, number: target.number }, operation: request.operation || 'create', selection: request.selection || '', task: request.task || target.task || '', variables, model: connection.model, reviewModel:connection.reviewModel, connection: connection.id, sources, prompts, contract: target.type === 'chapter' ? 'json-chapter' : target.type === 'scene' ? 'json-scene' : target.type === 'preview' ? 'json-preview' : 'text', created: new Date().toISOString() };
   if(range){packet.range=range;packet.fragmentOperation=packet.operation;packet.context=buildFragmentContext(store,{target:target.id,field:'Текст главы',text:range.text,task:packet.task,before:target.content.slice(0,range.start),after:target.content.slice(range.end),contextMode:request.contextMode||'full'},connection,sources);}
   if (!packet.task.trim()) errors.push('Задайте задачу для ИИ');
   const serialized = JSON.stringify(packet.context?{...packet,sources:undefined}:packet); const estimated = Math.ceil(Buffer.byteLength(serialized, 'utf8') / 2);

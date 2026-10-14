@@ -1,3 +1,4 @@
+import { modelConnection } from './model-choice.js';
 import http from 'node:http';
 import { generateInsertion } from './insertion.js';
 import { makeTextPacket } from './text-packet.js';
@@ -9,13 +10,15 @@ import { seedPrompts } from './prompts.js';
 import { initializeStarterBook } from './starter-book.js';
 import { effectiveScheme, prepareScheme, makePacket, validateGraph, validateResult, acceptCandidate } from './generation.js';
 import { Secrets, callProvider, listModels } from './provider.js';
+import { codexExecutable } from './openai.js';
 import { inspectJsonBundle, importJsonBundle } from './json-importer.js';
 import { readJsonDirectory } from './directory-importer.js';
 import { bookExportSummary, exportBook } from './book-export.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export function makeServer(store, { dev = false, mockProvider, middleware } = {}) {
+export function makeServer(store, { dev = false, mockProvider, middleware, openai } = {}) {
   const secrets = new Secrets(store.directory), pending = new Map();
+  if (openai) secrets.openai = openai;
   seedPrompts(store);
   const reply = (res, code, value) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); };
   const server = http.createServer(async (req, res) => {
@@ -94,18 +97,26 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         }); return reply(res, 200, result);
       }
       if (route === '/api/connection' && req.method === 'POST') {
-        const { key, ...value } = body; if (!value.model || !['api', 'executor'].includes(value.kind)) fail('Заполните подключение и модель');
+        const { key, hasKey, ...value } = body; if ((!value.model && !value.primaryModel && value.kind !== 'openai') || !['api', 'executor', 'openai'].includes(value.kind)) fail('Заполните подключение и модель');
         if (value.kind === 'api' && !/^https?:\/\//.test(value.url)) fail('Нужен HTTP(S) адрес API');
-        const old = value.id && store.get(value.id); const saved = store.save({ ...value, type: 'connection', reviewModel: value.reviewModel || value.model }, old?.rev); if (key !== undefined) secrets.set(saved.id, key); return reply(res, 200, { ...saved, hasKey: secrets.has(saved.id) });
+        const old = value.id && store.get(value.id); if (old && old.type !== 'connection') fail('Это не подключение ИИ');
+        const saved = store.transaction(()=>{if(value.primaryModel){for(const other of store.all('connection'))if(other.id!==value.id&&other.primaryModel)store.save({...other,primaryModel:''},other.rev);}return store.save({ ...value, type: 'connection', model:value.model||value.primaryModel||'', reviewModel: value.reviewModel || '',primaryModel:value.primaryModel||'' }, old?.rev);}); if (value.kind === 'api' && key !== undefined) secrets.set(saved.id, key); return reply(res, 200, { ...saved, hasKey: secrets.has(saved.id) });
+      }
+      if (route === '/api/openai/detect' && req.method === 'POST') return reply(res, 200, { path: codexExecutable() });
+      if (route.startsWith('/api/openai/') && req.method === 'POST') {
+        const connection = store.get(body.id); if (connection?.type !== 'connection' || connection.kind !== 'openai') fail('Выберите сохранённое подключение OpenAI');
+        const operation = route.slice('/api/openai/'.length);
+        if (!['status', 'login', 'cancel', 'logout'].includes(operation)) fail('Неизвестная операция OpenAI', 404);
+        return reply(res, 200, await secrets.openai[operation](connection));
       }
       if (route === '/api/models' && req.method === 'POST') return reply(res, 200, await listModels(store.get(body.id), secrets));
-      if(route==='/api/text/context'&&req.method==='POST')return reply(res,200,makeTextPacket(store,body,store.get(body.connection)||{}).context);
+      if(route==='/api/text/context'&&req.method==='POST')return reply(res,200,makeTextPacket(store,body,modelConnection(store.get(body.connection),body)||{}).context);
       if (route === '/api/text/query' && req.method === 'POST') {
         if (body.mode!==undefined&&!['revise','insert'].includes(body.mode)) fail('Неизвестная операция с текстом');
         if (typeof body.text !== 'string' || body.mode!=='insert'&&!body.text.trim()) fail('Сначала выделите текст');
         if(body.mode&&((body.before!==undefined&&typeof body.before!=='string')||(body.after!==undefined&&typeof body.after!=='string')))fail('Неверный контекст поля');
         if (typeof body.task !== 'string' || !body.task.trim()) fail('Введите запрос по тексту');
-        const connection = store.get(body.connection);
+        const connection = modelConnection(store.get(body.connection),body);
         if (!connection || connection.type !== 'connection') fail('Выберите подключение ИИ');
         const packet=makeTextPacket(store,body,connection);const context=packet.context;
         if (connection.context && Math.ceil(JSON.stringify(packet).length / 2) + (connection.maxOutput || 8000) > connection.context) fail('Выделение и запрос превышают контекст модели. Выделите меньший фрагмент.');
@@ -118,7 +129,7 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         } finally { pending.delete(controller); res.off('close', abort); }
       }
       if (route === '/api/connection/test' && req.method === 'POST') {
-        const connection = store.get(body.id); if (!connection) fail('Подключение не найдено');
+        const connection = modelConnection(store.get(body.id)); if (!connection) fail('Подключение не найдено');
         const packet = { target: { title: 'Проверка подключения' }, task: 'Ответь одним словом: Готово', sources: [], prompts: [], contract: 'text', model: connection.model };
         await (mockProvider || callProvider)({ ...connection, maxOutput: connection.maxOutput || 8192 }, packet, secrets); return reply(res, 200, { status: 'Готово' });
       }
@@ -131,7 +142,7 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
         const candidate = store.save({ type: 'candidate', title: target.title, status: 'running', valid: false, packet, content: '', reviews: [], project: ancestry(store, target).find(x => x.type === 'project')?.id });
         const controller = new AbortController(); pending.set(candidate.id, controller);
         (async () => { try {
-          const connection=store.get(packet.connection);const generated=packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const content=generated.text;
+          const connection=modelConnection(store.get(packet.connection),packet);const generated=packet.operation==='insert'?await generateInsertion(connection,packet,secrets,controller.signal,mockProvider||callProvider):{text:await (mockProvider||callProvider)(connection,packet,secrets,controller.signal)};const content=generated.text;
           const current = store.get(candidate.id); if (controller.signal.aborted || current.status === 'cancelled') return;
           let valid = true, formatError = ''; try { validateResult(packet.contract, content); } catch (e) { valid = false; formatError = e.message; }
           store.save({ ...current, status: 'ready', content, valid, formatError, insertionChecks:generated.checks }, current.rev);
@@ -143,7 +154,7 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
       if (route === '/api/candidate/accept' && req.method === 'POST') return reply(res, 200, acceptCandidate(store, body.id, body.expected));
       if (route === '/api/candidate/review' && req.method === 'POST') {
         const c = store.get(body.id); if (!c || c.status !== 'ready' || !c.valid) fail('Нужен валидный кандидат');
-        const connection = store.get(c.packet.connection); const packet = { ...c.packet, candidate: c.content, prompts: c.packet.prompts.filter(p => p.stage === 'review' && (!body.prompts || body.prompts.includes(p.id))) };
+        const connection = modelConnection(store.get(c.packet.connection),{...c.packet,reviewModel:body.model||c.packet.reviewModel}); const packet = { ...c.packet, candidate: c.content, prompts: c.packet.prompts.filter(p => p.stage === 'review' && (!body.prompts || body.prompts.includes(p.id))) };
         if (!packet.prompts.length) fail('Проверочные промпты отключены');
         const reviewId = id(), controller = new AbortController(); pending.set(c.id, controller);
         const started = { id: reviewId, status: 'Выполняется', findings: [], model: connection.reviewModel || connection.model, hash: hash(c.content), prompts: packet.prompts.map(p => ({ id: p.id, rev: p.rev })) };
@@ -154,7 +165,7 @@ export function makeServer(store, { dev = false, mockProvider, middleware } = {}
       fail('Неизвестная операция', 404);
     } catch (e) { reply(res, e.status || 400, { error: e instanceof SyntaxError ? 'Неверный JSON' : e.message }); }
   });
-  server.on('close', () => { for (const c of pending.values()) c.abort(); }); return server;
+  server.on('close', () => { for (const c of pending.values()) c.abort(); secrets.openai.close(); }); return server;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const dev = process.argv.includes('--dev'); let middleware;

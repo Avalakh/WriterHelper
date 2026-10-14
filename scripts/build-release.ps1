@@ -37,6 +37,12 @@ try {
     Require-Success
     node tests/generation-target-ui.js
     Require-Success
+    node tests/connection-models-ui.js
+    Require-Success
+    node tests/primary-model-ui.js
+    Require-Success
+    node tests/openai-ui.js
+    Require-Success
     if ((Test-Path -LiteralPath (Join-Path $writerApp 'data/writer.sqlite'))) { throw 'Каталог сборки содержит пользовательскую базу; повторная сборка запрещена' }
     New-Item -ItemType Directory -Path $writerApp -Force | Out-Null
     foreach ($writerPart in @('server','dist','docs','desktop','package.json','package-lock.json','README.md','WriterHelper.exe','WriterHelper.exe.config','Microsoft.Web.WebView2.Core.dll','Microsoft.Web.WebView2.WinForms.dll','WebView2Loader.dll')) {
@@ -66,6 +72,10 @@ try {
     $writerNotes = Join-Path $writerOutput 'release-notes.md'
     @"
 WriterHelper $writerVersion поставляется вместе с актуальными рабочими материалами «Железного разума». Программа и книга подготовлены одним выпуском из последнего сохранённого авторского проекта.
+
+Модели генерации и проверки выбираются из выпадающих списков, автоматически загруженных из сохранённого подключения. Поддерживается OpenAI через Codex CLI и вход по коду устройства, без API-ключа. Списки можно обновить; при необходимости доступен ручной ввод.
+
+Поле «Основная модель» находится в настройках подключения перед моделями генерации и проверки. После сохранения основное подключение и модель подставляются в новые запросы: генерацию материалов, работу с фрагментами и вопросы по тексту. В каждой операции можно выбрать другую модель; разовая замена не меняет общий выбор. Выбор сохраняется после перезапуска.
 
 Ctrl+S сохраняет активный материал, оформление, правку кандидата, подключение ИИ, промпт или схему тем же действием, что кнопка сохранения. Поддерживается русская раскладка. Открытый диалог не сохраняет скрытый за ним редактор.
 
